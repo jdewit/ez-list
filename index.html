@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--dependencies start -->
+  <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+  <script src="//cdn.rawgit.com/taye/interact.js/master/interact.js"></script>
+  <script src="//cdn.rawgit.com/jdewit/ez-stringify/master/ez-stringify.js"></script>
+  <!--<script src="bower_components/interact/interact.js"></script>-->
+  <!--dependencies end -->
+
+  <link href="dist/ez-list.min.css" rel="stylesheet">
+  <link href="demo/css/style.css" rel="stylesheet">
+  <script src="dist/ez-list.js"></script>
+  <script src="dist/ez-list-tpl.js"></script>
+
+  <script>
+    angular.module('myApp', ['ez.list', 'ez.stringify'])
+
+    .controller('AppCtrl', ['$scope', 'EzListConfig', function AppCtrl($scope, EzListConfig) {
+
+      EzListConfig.itemField = '';
+
+      $scope.list = {
+        items: [
+          {
+            text: '1',
+            items: [
+              {
+                text: '1a',
+                items: [
+                  {text: '1a 1'}
+                ]
+              },
+              {text: '1b'},
+              {text: '1c'}
+            ]
+          },
+          {text: '2'},
+          {text: '3'},
+          {text: '4'},
+          {text: '5'},
+          {
+            text: '6',
+            items: [
+              {
+                text: '6a',
+                items: [
+                  {text: '6a 1'}
+                ]
+              },
+              {text: '6b'},
+              {text: '6c'}
+            ]
+          },
+          {text: '7'},
+          {text: '8'},
+          {text: '9'}
+        ]
+      };
+
+      $scope.list2 = {
+        children: [
+          {
+            text: 'Target 1'
+          },
+          {
+            text: 'Target 2'
+          }
+        ]
+      };
+
+      $scope.config2 = {
+        childrenField: 'children',
+        dropOnly: true,
+        allowDrag: false,
+        template: 'config2-tpl',
+        onDrop: function(item, target) {
+          console.log('item dropped on drop only list -> ', item);
+          console.log('target', target);
+        }
+      };
+
+      $scope.trashConfig = {
+        dropOnly: true,
+        onDrop: function(item) {
+          console.log('item trashed -> ' + item.text);
+        }
+      };
+
+    }])
+;
+
+  </script>
+</head>
+<body ng-app="myApp">
+  <div ng-controller="AppCtrl" class="container">
+    <div class="page-header">
+      <h1>ez-list</h1>
+    </div>
+    <div class="page-body">
+
+      <div class="row">
+        <div class="col-lg-3 col-md-3">
+          <h3>Drop Only List</h3>
+          <hr>
+
+          <div class="list2" ez-list="list2" ez-config="config2">
+            {{ item.text }}
+          </div>
+
+          <div id="trash" ez-list ez-config="trashConfig"></div>
+
+        </div>
+        <div class="col-lg-7 col-md-7">
+          <h3>List 1 - <small><a ng-click="showList1 = !showList1">show json</a></small></h3>
+          <hr>
+          <div ng-if="showList1"><pre>{{ list | stringify }}</pre></div>
+          <div ez-list="list">
+            <a class="ez-toggle-btn" ng-click="item[options.collapsedField] = !item[options.collapsedField]"g>
+              <i class="ez-arrow-right glyphicon glyphicon-chevron-right"g></i>
+              <i class="ez-arrow-down glyphicon glyphicon-chevron-down"g></i>
+            </a>
+
+            {{ item.text }}
+
+            <a class="ez-list-item-remove" ng-click="remove()"g>
+              <i class="glyphicon glyphicon-trash"g></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+    <hr>
+  </div>
+</body>
+
+</html>
+

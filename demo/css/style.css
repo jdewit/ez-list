@@ -1,0 +1,30 @@
+#trash {
+  margin-top: 60px;
+  height: 300px;
+  background-color: #eee;
+  background: url('../images/trash1.png') no-repeat;
+  background-size: contain;
+  border: none;
+}
+#trash ul {
+  padding: 0;
+  margin: 0;
+}
+#trash.ez-list-target {
+  background: url('../images/trash2.png') no-repeat;
+  background-size: contain;
+}
+.list2 .ez-dragover {
+  border: 1px red solid;
+}
+.ez-list-item-content {
+  background-color: #f8faff !important;
+}
+.ez-list-item-content a,
+.ez-list-item-content span {
+  cursor: pointer;
+}
+.ez-list-empty {
+  height: 100px;
+  background-color: #eee;
+}

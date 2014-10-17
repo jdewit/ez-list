@@ -1,0 +1,12 @@
+{
+  "name": "ez-list",
+  "version": "0.0.1",
+  "devDependencies": {
+    "angular-mocks": "1.2.*"
+  },
+  "dependencies": {
+    "jquery": "*",
+    "angular": "1.2.*",
+    "interact": "1.0.*"
+  }
+}

@@ -1,0 +1,112 @@
+.ez-list {
+  padding: 0;
+  list-style: none;
+  position: relative;
+  width: 100%;
+}
+.ez-list.ez-list-draggable .ez-draggable {
+  cursor: move;
+}
+.ez-list * {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.ez-list .ez-placeholder {
+  background: #f0f9ff;
+  border: 2px dashed #bed2db;
+  height: 40px;
+  position: relative;
+}
+.ez-list .ez-placeholder i {
+  color: #428bca;
+  left: -16px;
+  top: -9px;
+}
+.ez-list.ez-no-placeholder .ez-placeholder {
+  display: none !important;
+}
+.ez-list .ez-list-items {
+  background-color: transparent;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ez-list .ez-list-items .ez-list-items {
+  margin-left: 20px;
+}
+.ez-list .ez-drag-container {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+  z-index: 99;
+  opacity: .7;
+}
+.ez-list .ez-list-item {
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.ez-list .ez-list-item .ez-toggle-btn {
+  cursor: pointer;
+}
+.ez-list.ez-droponly .ez-list-item-active .ez-list-item-content {
+  border: solid 2px red;
+}
+.ez-list .ez-list-item-remove {
+  float: right;
+  width: 16px;
+  cursor: pointer;
+}
+.ez-list .ez-empty.ez-list-item-container {
+  padding-bottom: 0;
+}
+.ez-list .ez-empty > .ez-list-item-content .ez-toggle-btn {
+  display: none;
+}
+.ez-list.ez-droponly .ez-list-item-content {
+  padding-left: 10px;
+}
+.ez-list.ez-droponly .ez-toggle-btn {
+  display: none;
+}
+.ez-list .ez-arrow-down {
+  display: inline-block;
+}
+.ez-list .ez-arrow-right {
+  display: none;
+}
+.ez-list .ez-list-item-container {
+  padding-bottom: 5px;
+}
+.ez-list .ez-collapsed.ez-list-item-container {
+  padding-bottom: 0;
+}
+.ez-list .ez-collapsed .ez-arrow-right {
+  display: inline-block;
+}
+.ez-list .ez-collapsed .ez-arrow-down {
+  display: none;
+}
+.ez-list .ez-list-item-content {
+  min-height: 40px;
+  padding: 10px;
+  color: #7c9eb2;
+  border: 1px solid #dae2ea;
+  background-color: #fff;
+}
+.ez-list.ez-drag-over .ez-placeholder {
+  display: block;
+}
+.ez-list.ez-drag-over .ez-dragging .ez-placeholder {
+  display: none;
+}
+.ez-list.ez-drag-over .ez-drag-container {
+  display: block;
+}

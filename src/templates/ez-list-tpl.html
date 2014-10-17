@@ -1,0 +1,10 @@
+<div class="ez-list-item-container" ng-class="{'ez-collapsed': item[options.collapsedField], 'ez-empty': !hasItems}">
+
+  <div class="ez-list-item-content ez-dropzone ez-draggable" ez-drag-handle></div>
+
+  <ul class="ez-list-items" ng-if="!hasItems || !item[options.collapsedField]">
+    <li class="ez-list-item" ng-repeat="item in item[options.childrenField]" ng-include="'ez-list-tpl.html'"></li>
+  </ul>
+
+</div>
+
