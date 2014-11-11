@@ -44,8 +44,7 @@
               Draggable.unsetDropzone(element);
             }
 
-            if (oldVal && newVal.length === 0) { // && oldVal.length > 0)) {
-              console.log('set ddd', element, newVal, oldVal);
+            if (oldVal && newVal.length === 0) {
               Draggable.setDropzone(element, scope.options);
             }
           });

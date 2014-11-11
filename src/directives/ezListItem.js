@@ -14,9 +14,7 @@
           });
         }
 
-        Draggable.setDropzone($element[0].children[0].children[0], scope.options);
-
-        $element.on(Draggable.supportsTouch ? 'touchstart' : 'mousedown', function(e) {
+        $element.on(interact.supportsTouch ? 'touchstart' : 'mousedown', function(e) {
           if (scope.options.allowDrag === true || (typeof scope.options.allowDrag === 'function' && scope.options.allowDrag(e, scope.item))) {
             Draggable.init(e, scope);
           }
@@ -33,6 +31,10 @@
         scope.remove = function() {
           scope.$parent.$parent.item[scope.options.childrenField].splice(scope.$parent.$parent.item[scope.options.childrenField].indexOf(scope.item), 1);
         };
+
+        scope.$on('$destroy', function() {
+          Draggable.unsetDropzone($element[0]);
+        });
 
       }
     };
