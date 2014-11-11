@@ -14,7 +14,7 @@
           });
         }
 
-        $element.on(interact.supportsTouch ? 'touchstart' : 'mousedown', function(e) {
+        $element.on(interact.supportsTouch() ? 'touchstart' : 'mousedown', function(e) {
           if (scope.options.allowDrag === true || (typeof scope.options.allowDrag === 'function' && scope.options.allowDrag(e, scope.item))) {
             Draggable.init(e, scope);
           }

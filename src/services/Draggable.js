@@ -65,8 +65,6 @@
         listContainerEl = $listContainerEl[0];
         listContainerScope = $listContainerEl.isolateScope();
 
-        console.log('init', dragItemEl);
-
         this.setDropzones();
 
         dragOptions = listContainerScope.options;
@@ -76,8 +74,6 @@
         dragItemIndex = dragList[listContainerScope.options.childrenField].indexOf(dragItem);
 
         this.initDragContainer();
-
-        //$dragItemEl.find('.ez-dropzone').removeClass('ez-dropzone');
 
         // prevent nested items within the dragged item from being accepted by a dropzone
         dragItemEl.classList.add(listContainerScope.options.acceptClass);
@@ -124,8 +120,6 @@
           ondragleave: this.leave.bind(this),
           ondrop: this.drop.bind(this)
         });
-
-        console.log('ho', dropInteracts._dropElements);
       },
 
       setDropzone: function(el, options) {
@@ -188,7 +182,6 @@
        * Fires once when an item leaves another
        */
       leave: function(e) {
-        console.log('eave', e.target);
         if (!e.target.hasAttribute('ez-drag-handle')) {
           return;
         }
@@ -217,11 +210,6 @@
        * Fires when an item is dropped on a dropzone item
        */
       drop: function(e) {
-        console.log('drop', e.target);
-        //if (!e.target.hasAttribute('ez-drag-handle')) {
-          //return;
-        //}
-
         if (dropItemEl) {
           dropItemEl.classList.remove('ez-dragover');
         }
@@ -232,8 +220,6 @@
       },
 
       start: function() {
-        console.log('drag start', dragItemEl);
-
         hasDragged = true;
       },
 
@@ -291,22 +277,18 @@
        * Drag end handler
        */
       end: function() {
-        console.log('ende', dropItemEl);
         if (!dropItemEl) {
           // no longer over an item so use the placeholder to find the drop list
 
           if (!placeholderEl.parentNode) {
-            console.log('no placeholder');
             return;
           }
 
           dropList = angular.element(placeholderEl.parentNode).scope().item;
         } else {
           if ($dropItemEl.hasClass('ez-list')) {
-            console.log('LIST');
             dropList = $dropItemEl.isolateScope().item;
           } else {
-            console.log('LIST ITEM');
             dropList = $dropItemEl.parent().scope().item;
           }
         }
@@ -323,19 +305,14 @@
           // add drag item to target items array
 
           if (dropList && dropList.hasOwnProperty(listContainerScope.options.childrenField)) {
-            console.log('1');
             if (placeholderEl.parentNode) {
-              console.log('put', this.getPlaceholderIndex());
               dropList[listContainerScope.options.childrenField].splice(this.getPlaceholderIndex(), 0, dragItem);
             }
           } else {
-            console.log('2', listContainerScope.options.childrenField, dropList);
             dropList[listContainerScope.options.childrenField] = [dragItem];
           }
         } else {
-            console.log('3');
           if (!dropItemEl) {
-            console.log('4');
             // return item back to origin
             dragList[dragListScope.options.childrenField].splice(dragItemIndex, 0, dragItem);
           }
