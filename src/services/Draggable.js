@@ -146,13 +146,12 @@
        * Fires once when an item enters another
        */
       enter: function(e) {
-        if (!e.target.hasAttribute('ez-drag-handle')) {
-          return;
-        }
 
         if (angular.element(e.target).hasClass('ez-list')) {
           // drop target is an empty list
           newListContainerEl = e.target;
+          dropItemEl = newListContainerEl;
+          $dropItemEl = angular.element(dropItemEl);
         } else {
           // drop target is a list item
           dropItemEl = e.target.parentNode.parentNode;
@@ -182,6 +181,8 @@
        * Fires once when an item leaves another
        */
       leave: function(e) {
+        //TODO need to reset listContainer to placeholder list when drag leaves a list
+
         if (!e.target.hasAttribute('ez-drag-handle')) {
           return;
         }
@@ -210,12 +211,14 @@
        * Fires when an item is dropped on a dropzone item
        */
       drop: function(e) {
-        if (dropItemEl) {
-          dropItemEl.classList.remove('ez-dragover');
+        if (!dropItemEl) {
+          return;
         }
 
+        dropItemEl.classList.remove('ez-dragover');
+
         if (listContainerScope.options.hasOwnProperty('onDrop')) {
-          listContainerScope.options.onDrop(dragItem, angular.element(dropItemEl).scope().item);
+          listContainerScope.options.onDrop(dragItem, $dropItemEl.scope().item);
         }
       },
 
@@ -277,6 +280,8 @@
        * Drag end handler
        */
       end: function() {
+        interact.dynamicDrop(false);
+
         if (!dropItemEl) {
           // no longer over an item so use the placeholder to find the drop list
 
@@ -301,6 +306,10 @@
 
         dragListScope.$apply();
 
+        if (listContainerScope.options.dropOnly) {
+          return;
+        }
+
         if (listContainerScope.options.allowInsertion) {
           // add drag item to target items array
 
@@ -312,15 +321,11 @@
             dropList[listContainerScope.options.childrenField] = [dragItem];
           }
         } else {
-          if (!dropItemEl) {
-            // return item back to origin
-            dragList[dragListScope.options.childrenField].splice(dragItemIndex, 0, dragItem);
-          }
+          // return item back to origin
+          dragList[dragListScope.options.childrenField].splice(dragItemIndex, 0, dragItem);
         }
 
         dragListScope.$apply();
-
-        interact.dynamicDrop(false);
       },
 
       /**
