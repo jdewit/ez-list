@@ -38,15 +38,15 @@
           $element.addClass('has-dropzone');
           Draggable.setDropzone(element, scope.options);
         } else {
-          scope.$watchCollection('item.' + scope.options.childrenField, function(newVal, oldVal) {
+          scope.$watchCollection('item.' + scope.options.childrenField, function(newVal) {
             scope.hasItems = newVal && newVal.length;
 
-            if (oldVal.length === 0 && newVal.length > 0 && element.hasClass('has-dropzone')) {
+            if (newVal && newVal.length > 0 && $element.hasClass('has-dropzone')) {
               $element.removeClass('has-dropzone');
               Draggable.unsetDropzone(element);
             }
 
-            if (!newVal && !element.hasClass('has-dropzone')) {
+            if (!newVal && !$element.hasClass('has-dropzone')) {
               $element.addClass('has-dropzone');
               Draggable.setDropzone(element, scope.options);
             }

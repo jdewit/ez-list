@@ -66,15 +66,15 @@ angular.module('ez.list', []);
           $element.addClass('has-dropzone');
           Draggable.setDropzone(element, scope.options);
         } else {
-          scope.$watchCollection('item.' + scope.options.childrenField, function(newVal, oldVal) {
+          scope.$watchCollection('item.' + scope.options.childrenField, function(newVal) {
             scope.hasItems = newVal && newVal.length;
 
-            if (oldVal.length === 0 && newVal.length > 0 && element.hasClass('has-dropzone')) {
+            if (newVal && newVal.length > 0 && $element.hasClass('has-dropzone')) {
               $element.removeClass('has-dropzone');
               Draggable.unsetDropzone(element);
             }
 
-            if (!newVal && !element.hasClass('has-dropzone')) {
+            if (!newVal && !$element.hasClass('has-dropzone')) {
               $element.addClass('has-dropzone');
               Draggable.setDropzone(element, scope.options);
             }
@@ -279,7 +279,6 @@ angular.module('ez.list', []);
        * Fires once when an item enters another
        */
       enter: function(e) {
-        console.log('enet', e.target);
 
         if (angular.element(e.target).hasClass('ez-list')) {
           // drop target is an empty list
@@ -315,6 +314,8 @@ angular.module('ez.list', []);
        * Fires once when an item leaves another
        */
       leave: function(e) {
+        //TODO need to reset listContainer to placeholder list when drag leaves a list
+
         if (!e.target.hasAttribute('ez-drag-handle')) {
           return;
         }
@@ -344,7 +345,6 @@ angular.module('ez.list', []);
        */
       drop: function(e) {
         if (!dropItemEl) {
-          console.log('ret urr');
           return;
         }
 
