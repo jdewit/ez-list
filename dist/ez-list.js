@@ -1,14 +1,8 @@
 (function() {
 'use strict';
 
-angular.module('ez.list', []);
-
-})();
-
-(function() {
-  'use strict';
-
-  angular.module('ez.list').constant('EzListConfig', {
+angular.module('ez.list', [])
+.constant('EzListConfig', {
     acceptClass: 'ez-dragging', // item class to accept in dropzones
     listChildrenField: 'items',
     childrenField: 'items',
@@ -22,14 +16,7 @@ angular.module('ez.list', []);
     dropOnly: false, // only allow dragged items to be dropped on 1st level items
     xThreshold: 15, // Amount of drag (in px) required for left - right movement
     yThreshold: 5, // Amount of drag (in px) required for up - down movement
-  });
-
-})();
-
-(function() {
-  'use strict';
-
-  angular.module('ez.list').directive('ezList', ['EzListConfig', 'Draggable', '$compile', '$templateCache', function(EzListConfig, Draggable, $compile, $templateCache) {
+}).directive('ezList', ['EzListConfig', 'Draggable', function(EzListConfig, Draggable) {
     return {
       restrict: 'A',
       replace: true,
@@ -49,7 +36,6 @@ angular.module('ez.list', []);
         // give child items access to the transclude
         scope.options.transclude = transclude;
 
-        var hasItems;
         var element = $element[0];
 
         if (scope.options.dropOnly) {
@@ -83,14 +69,8 @@ angular.module('ez.list', []);
         }
       }
     };
-  }]);
-
-})();
-
-(function() {
-  'use strict';
-
-  angular.module('ez.list').directive('ezListItem', ['Draggable', '$compile', function(Draggable, $compile) {
+}])
+.directive('ezListItem', ['Draggable', function(Draggable) {
     return {
       restrict: 'C',
       link: function (scope, $element) {
@@ -127,17 +107,8 @@ angular.module('ez.list', []);
 
       }
     };
-  }]);
-
-})();
-
-(function() {
-  'use strict';
-
-  /**
-   * This service stores references the active dropzone item
-   */
-  angular.module('ez.list').factory('Draggable', [function() {
+}])
+.factory('Draggable', [function() {
     var dragItem,
         dragItemEl,
         $dragItemEl,
@@ -151,7 +122,6 @@ angular.module('ez.list', []);
         dragDx = 0,
         dragDy = 0,
         dragMoveX = 0, // number of moves in the x direction
-        dragMoveY = 0, // number of moves in the y direction
         dragDirectionX,
         dragDirectionY,
         dropItemEl,
@@ -317,7 +287,7 @@ angular.module('ez.list', []);
       /**
        * Fires once when an item leaves another
        */
-      leave: function(e) {
+      leave: function() {
         dropItemEl.classList.remove('ez-dragover');
 
         if ($dropItemEl.hasClass('ez-list')) {
@@ -346,7 +316,7 @@ angular.module('ez.list', []);
       /**
        * Fires when an item is dropped on a dropzone item
        */
-      drop: function(e) {
+      drop: function() {
         if (!dropItemEl) {
           return;
         }
@@ -587,6 +557,6 @@ angular.module('ez.list', []);
 
     };
 
-  }]);
+}])
 
 })();

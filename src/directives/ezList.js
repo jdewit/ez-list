@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('ez.list').directive('ezList', ['EzListConfig', 'Draggable', '$compile', '$templateCache', function(EzListConfig, Draggable, $compile, $templateCache) {
+  angular.module('ez.list').directive('ezList', ['EzListConfig', 'Draggable', function(EzListConfig, Draggable) {
     return {
       restrict: 'A',
       replace: true,
@@ -21,7 +21,6 @@
         // give child items access to the transclude
         scope.options.transclude = transclude;
 
-        var hasItems;
         var element = $element[0];
 
         if (scope.options.dropOnly) {

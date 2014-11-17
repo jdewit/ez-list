@@ -113,8 +113,8 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-        //mangle: false,
-        //compress: true
+        mangle: true,
+        compress: true
       },
       dist: {
         files: {
@@ -141,11 +141,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-concat');
- // grunt.loadNpmTasks('grunt-bump');
-//  grunt.loadNpmTasks('grunt-replace');
+  grunt.loadNpmTasks('grunt-bump');
+  grunt.loadNpmTasks('grunt-replace');
   grunt.loadNpmTasks('grunt-angular-templates');
 
-  grunt.registerTask('default', ['jshint', 'concat', 'ngtemplates', 'less', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'concat', 'ngtemplates', 'less', 'replace', 'uglify']);
 
   grunt.registerTask('dev', ['default', 'karma:unit:start', 'watch']);
 

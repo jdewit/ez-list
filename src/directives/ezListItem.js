@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('ez.list').directive('ezListItem', ['Draggable', '$compile', function(Draggable, $compile) {
+  angular.module('ez.list').directive('ezListItem', ['Draggable', function(Draggable) {
     return {
       restrict: 'C',
       link: function (scope, $element) {

@@ -1,9 +1,6 @@
 (function() {
   'use strict';
 
-  /**
-   * This service stores references the active dropzone item
-   */
   angular.module('ez.list').factory('Draggable', [function() {
     var dragItem,
         dragItemEl,
@@ -18,7 +15,6 @@
         dragDx = 0,
         dragDy = 0,
         dragMoveX = 0, // number of moves in the x direction
-        dragMoveY = 0, // number of moves in the y direction
         dragDirectionX,
         dragDirectionY,
         dropItemEl,
@@ -184,7 +180,7 @@
       /**
        * Fires once when an item leaves another
        */
-      leave: function(e) {
+      leave: function() {
         dropItemEl.classList.remove('ez-dragover');
 
         if ($dropItemEl.hasClass('ez-list')) {
@@ -213,7 +209,7 @@
       /**
        * Fires when an item is dropped on a dropzone item
        */
-      drop: function(e) {
+      drop: function() {
         if (!dropItemEl) {
           return;
         }
