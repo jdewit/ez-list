@@ -117,7 +117,7 @@
         $dragItemEl.find('.ez-list-item-content').removeClass('ez-dropzone');
 
         dropInteracts = interact('.ez-dropzone').dropzone({
-          accept: '.ez-draggable',
+          //accept: '.ez-draggable',
           ondragenter: this.enter.bind(this),
           ondragleave: this.leave.bind(this),
           ondrop: this.drop.bind(this)
@@ -207,7 +207,7 @@
           listContainerEl = null;
         }
 
-        dropItem = dropList = dropItemEl = $dropItemEl = null;
+        //dropItem = dropList = dropItemEl = $dropItemEl = null;
       },
 
       /**
@@ -350,7 +350,12 @@
             return;
           }
 
-          dropList = $dropItemEl.parent().scope().item;
+          if (placeholderEl.previousElementSibling) {
+            dropList = $dropItemEl.parent().scope().item;
+          } else {
+            // droplist is inside
+            dropList = $dropItemEl.scope().item;
+          }
         }
 
       },
@@ -359,11 +364,7 @@
        * Set transform style on drag container element
        */
       setDragContainerElPosition: function() {
-        dragContainerEl.style.webkitTransform = dragContainerEl.style.transform = 'translate(' + dragDx + 'px, ' + dragDy + 'px)';
-      },
-
-      resetDragContainerElPosition: function() {
-        dragContainerEl.style.webkitTransform = dragContainerEl.style.transform = 'translate(0px, 0px)';
+        dragContainerEl.style.webkitTransform = dragContainerEl.style.transform = 'translate3D(' + dragDx + 'px, ' + dragDy + 'px, 0px)';
       },
 
       moveLeft: function() {
@@ -394,9 +395,7 @@
 
         this.setDropItem(placeholderEl.previousElementSibling);
 
-        if (!dropItemEl || dropItemEl.tagName !== 'LI') {
-          return;
-        }
+        dropList = null;
 
         if (listContainerScope.options.openOnSlide && dropItem[listContainerScope.options.collapsedField] === true) {
           dropItem[listContainerScope.options.collapsedField] = false;
