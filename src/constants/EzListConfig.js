@@ -13,7 +13,7 @@
     allowInsertion: true, // allow items to be inserted next to one another
     openOnSlide: true, // open an item when a drag item is slid under and to the right
     dropOnly: false, // only allow dragged items to be dropped on 1st level items
-    xThreshold: 25, // Amount of drag (in px) required for left - right movement
+    xThreshold: 15, // Amount of drag (in px) required for left - right movement
     yThreshold: 5, // Amount of drag (in px) required for up - down movement
   });
 
