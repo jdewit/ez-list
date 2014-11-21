@@ -10,6 +10,12 @@
     }
   }
 
+  &.ez-list-target {
+    .ez-placeholder {
+      display: block;
+    }
+  }
+
   * {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -24,6 +30,7 @@
     border: 2px dashed #bed2db;
     height: 40px;
     position: relative;
+    display: none;
 
     i {
       color: #428bca;
@@ -43,7 +50,7 @@
     padding: 0;
   }
 
-  .ez-list-items .ez-list-items {
+  .ez-list-items .ez-list-items, .ez-drag-container .ez-list-items {
     margin-left: 20px;
   }
 

@@ -12,8 +12,9 @@
     allowNesting: true, // allow items to be nested inside one another
     allowInsertion: true, // allow items to be inserted next to one another
     openOnSlide: true, // open an item when a drag item is slid under and to the right
+    closeOnDrag: false, // close item on drag init
     dropOnly: false, // only allow dragged items to be dropped on 1st level items
-    xThreshold: 25, // Amount of drag (in px) required for left - right movement
+    xThreshold: 15, // Amount of drag (in px) required for left - right movement
     yThreshold: 5, // Amount of drag (in px) required for up - down movement
     bindMethods: {} // transcluded methods to bind to the scope
   });

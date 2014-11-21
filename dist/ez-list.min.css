@@ -7,6 +7,9 @@
 .ez-list.ez-list-draggable .ez-draggable {
   cursor: move;
 }
+.ez-list.ez-list-target .ez-placeholder {
+  display: block;
+}
 .ez-list * {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -20,6 +23,7 @@
   border: 2px dashed #bed2db;
   height: 40px;
   position: relative;
+  display: none;
 }
 .ez-list .ez-placeholder i {
   color: #428bca;
@@ -35,7 +39,8 @@
   margin: 0;
   padding: 0;
 }
-.ez-list .ez-list-items .ez-list-items {
+.ez-list .ez-list-items .ez-list-items,
+.ez-list .ez-drag-container .ez-list-items {
   margin-left: 20px;
 }
 .ez-list .ez-drag-container {

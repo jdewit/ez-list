@@ -1,9 +1,6 @@
 (function() {
   'use strict';
 
-  /**
-   * This service stores references the active dropzone item
-   */
   angular.module('ez.list').factory('Draggable', [function() {
     var dragItem,
         dragItemEl,
@@ -18,7 +15,6 @@
         dragDx = 0,
         dragDy = 0,
         dragMoveX = 0, // number of moves in the x direction
-        dragMoveY = 0, // number of moves in the y direction
         dragDirectionX,
         dragDirectionY,
         dropItemEl,
@@ -30,7 +26,9 @@
         listContainerEl,
         $listContainerEl,
         listContainerScope,
-        newListContainerEl,
+        prevListContainerEl,
+        $prevListContainerEl,
+        prevListContainerScope,
         hasDragged,
         dragOptions = {};
 
@@ -75,6 +73,13 @@
 
         this.initDragContainer();
 
+        if (dragOptions.closeOnDrag) {
+          dragItem[dragOptions.collapsedField] = true;
+          dragListScope.$apply();
+        } else {
+          placeholderEl.style.height = $dragItemEl.height() + 'px';
+        }
+
         // prevent nested items within the dragged item from being accepted by a dropzone
         dragItemEl.classList.add(listContainerScope.options.acceptClass);
 
@@ -115,7 +120,6 @@
         $dragItemEl.find('.ez-list-item-content').removeClass('ez-dropzone');
 
         dropInteracts = interact('.ez-dropzone').dropzone({
-          //accept: '.ez-draggable',
           ondragenter: this.enter.bind(this),
           ondragleave: this.leave.bind(this),
           ondrop: this.drop.bind(this)
@@ -146,54 +150,49 @@
        * Fires once when an item enters another
        */
       enter: function(e) {
+        var _listContainerEl;
 
         if (angular.element(e.target).hasClass('ez-list')) {
           // drop target is an empty list
-          newListContainerEl = e.target;
-          dropItemEl = newListContainerEl;
-          $dropItemEl = angular.element(dropItemEl);
+          _listContainerEl = e.target;
+
+          this.setDropItem(_listContainerEl);
         } else {
-          // drop target is a list item
-          dropItemEl = e.target.parentNode.parentNode;
-          $dropItemEl = angular.element(dropItemEl);
+          this.setDropItem(e.target.parentNode.parentNode);
           dropItemEl.classList.add('ez-dragover');
 
-          newListContainerEl = $dropItemEl.closest('.ez-list')[0];
+          _listContainerEl = $dropItemEl.closest('.ez-list')[0];
         }
 
-        dropItem = $dropItemEl.scope().item;
+        if (_listContainerEl !== listContainerEl) {
+          if (listContainerEl) {
+            prevListContainerEl = listContainerEl;
+            $prevListContainerEl = $listContainerEl;
+            prevListContainerScope = listContainerScope;
 
-        newListContainerEl.classList.add('ez-list-target');
+            prevListContainerEl.classList.remove('ez-list-target');
+          }
 
-        if (newListContainerEl === listContainerEl) {
-          return;
+          listContainerEl = _listContainerEl;
+          $listContainerEl = angular.element(listContainerEl);
+          listContainerScope = $listContainerEl.isolateScope();
+
+          listContainerEl.classList.add('ez-list-target');
+
+          _listContainerEl = null;
         }
-
-        // item has been dragged to a new tree
-        listContainerEl.classList.remove('ez-list-target');
-
-        listContainerEl = newListContainerEl;
-        $listContainerEl = angular.element(listContainerEl);
-        listContainerScope = $listContainerEl.isolateScope();
-
-        newListContainerEl = null;
       },
 
       /**
        * Fires once when an item leaves another
        */
-      leave: function(e) {
-        //TODO need to reset listContainer to placeholder list when drag leaves a list
-
-        if (!e.target.hasAttribute('ez-drag-handle')) {
-          return;
-        }
-
+      leave: function() {
         dropItemEl.classList.remove('ez-dragover');
 
         if ($dropItemEl.hasClass('ez-list')) {
           // drop target was an empty list
           listContainerEl.classList.remove('ez-list-target');
+          listContainerEl = null;
         } else {
           // drop target was a list item
 
@@ -206,13 +205,15 @@
           }
         }
 
-        dropItemEl = $dropItemEl = null;
+        if (listContainerScope.options.dropOnly) {
+          listContainerEl = null;
+        }
       },
 
       /**
        * Fires when an item is dropped on a dropzone item
        */
-      drop: function(e) {
+      drop: function() {
         if (!dropItemEl) {
           return;
         }
@@ -234,7 +235,7 @@
 
         this.setDragContainerElPosition();
 
-        if (!listContainerScope.options.allowInsertion) {
+        if (listContainerEl === null || !listContainerScope.options.allowInsertion) {
           return;
         }
 
@@ -284,23 +285,15 @@
       end: function() {
         interact.dynamicDrop(false);
 
-        if (!dropItemEl) {
-          // no longer over an item so use the placeholder to find the drop list
-
-          if (!placeholderEl.parentNode) {
-            return;
-          }
-
-          dropList = angular.element(placeholderEl.parentNode).scope().item;
-        } else {
-          if ($dropItemEl.hasClass('ez-list')) {
-            dropList = $dropItemEl.isolateScope().item;
-          } else {
-            dropList = $dropItemEl.parent().scope().item;
-          }
+        if (!placeholderEl.parentNode) {
+          return;
         }
 
-        dragItemEl.classList.remove(listContainerScope.options.acceptClass);
+        var index = this.getPlaceholderIndex();
+
+        dropList = angular.element(placeholderEl.parentNode).scope().item;
+
+        dragItemEl.classList.remove(dragOptions.acceptClass);
 
         dragContainerEl.removeChild(dragItemEl);
 
@@ -308,17 +301,12 @@
 
         dragListScope.$apply();
 
-        if (listContainerScope.options.dropOnly) {
+        if (listContainerEl && listContainerScope.options.dropOnly) {
           return;
-        }
-
-        if (listContainerScope.options.allowInsertion) {
+        } else if (listContainerEl && listContainerScope.options.allowInsertion) {
           // add drag item to target items array
-
           if (dropList && dropList.hasOwnProperty(listContainerScope.options.childrenField)) {
-            if (placeholderEl.parentNode) {
-              dropList[listContainerScope.options.childrenField].splice(this.getPlaceholderIndex(), 0, dragItem);
-            }
+            dropList[listContainerScope.options.childrenField].splice(index, 0, dragItem);
           } else {
             dropList[listContainerScope.options.childrenField] = [dragItem];
           }
@@ -327,9 +315,11 @@
           dragList[dragListScope.options.childrenField].splice(dragItemIndex, 0, dragItem);
         }
 
-        dragListScope.options.onMove(dragItem, dropItem);
+        if (typeof dragListScope.onMove === 'function') {
+          dragListScope.options.onMove(dragItem, dropItem);
+        }
 
-        dragListScope.$apply();
+        listContainerScope.$apply();
       },
 
       /**
@@ -350,28 +340,31 @@
         this.setDragContainerElPosition();
       },
 
+      setDropItem: function(el) {
+        dropItemEl = el;
+        $dropItemEl = angular.element(el);
+        dropItem = $dropItemEl.scope().item;
+      },
+
       /**
        * Set transform style on drag container element
        */
       setDragContainerElPosition: function() {
-        dragContainerEl.style.webkitTransform = dragContainerEl.style.transform = 'translate(' + dragDx + 'px, ' + dragDy + 'px)';
-      },
-
-      resetDragContainerElPosition: function() {
-        dragContainerEl.style.webkitTransform = dragContainerEl.style.transform = 'translate(0px, 0px)';
+        dragContainerEl.style.webkitTransform = dragContainerEl.style.transform = 'translate3D(' + dragDx + 'px, ' + dragDy + 'px, 0px)';
       },
 
       moveLeft: function() {
-        var prevItemEl = placeholderEl.parentNode.parentNode.parentNode;
-        var prevListEl = prevItemEl.parentNode;
-
-        if (!prevListEl || prevListEl.tagName !== 'UL') {
+        if (placeholderEl.nextElementSibling) { // only allow left if placeholder is last
           return;
         }
 
-        prevListEl.insertBefore(placeholderEl, prevItemEl.nextSibling);
+        this.setDropItem(placeholderEl.parentNode.parentNode.parentNode);
 
-        prevItemEl = prevListEl = null;
+        if (!dropItem || !dropItemEl || !dropItemEl.nextSibling) {
+          return;
+        }
+
+        dropItemEl.parentNode.insertBefore(placeholderEl, dropItemEl.nextSibling);
       },
 
       getPlaceholderIndex: function() {
@@ -382,27 +375,21 @@
        * Move placeholder to the right
        */
       moveRight: function() {
-        var prevItemEl = placeholderEl.previousElementSibling;
-        var $prevItemEl = angular.element(prevItemEl);
-        var scope = $prevItemEl.scope();
-
-        if (!prevItemEl || prevItemEl.tagName !== 'LI') {
+        if (!placeholderEl.previousElementSibling) {
           return;
         }
 
-        dropItem = scope.item;
+        this.setDropItem(placeholderEl.previousElementSibling);
 
-        if (scope.options.openOnSlide && scope.item[scope.options.collapsedField] === true) {
-          scope.item[scope.options.collapsedField] = false;
+        if (listContainerScope.options.openOnSlide && dropItem[listContainerScope.options.collapsedField] === true) {
+          dropItem[listContainerScope.options.collapsedField] = false;
 
-          scope.$apply();
+          listContainerScope.$apply();
 
-          prevItemEl.children[0].children[1].insertBefore(placeholderEl, prevItemEl.children[0].children[1].children[0]);
+          dropItemEl.children[0].children[1].insertBefore(placeholderEl, dropItemEl.children[0].children[1].children[0]);
         } else {
-          prevItemEl.children[0].children[1].appendChild(placeholderEl);
+          dropItemEl.children[0].children[1].appendChild(placeholderEl);
         }
-
-        prevItemEl = $prevItemEl = null;
       },
 
       moveUp: function() {
@@ -434,12 +421,19 @@
         }
 
         dragItemEl.classList.remove('ez-dragging');
-        listContainerEl.classList.remove('ez-drag-origin');
-        listContainerEl.classList.remove('ez-list-target');
+
+        if (listContainerEl) {
+          listContainerEl.classList.remove('ez-drag-origin');
+          listContainerEl.classList.remove('ez-list-target');
+        }
+        if (prevListContainerEl) {
+          prevListContainerEl.classList.remove('ez-drag-origin');
+          prevListContainerEl.classList.remove('ez-list-target');
+        }
 
         this.unsetDropzones();
 
-        listContainerEl = $dragItemEl = dragItemEl = dragList = dragItem = dragItemIndex = hasDragged = dropItem = null;
+        prevListContainerEl = $prevListContainerEl = prevListContainerScope = listContainerEl = $listContainerEl = listContainerScope = $dragItemEl = dragItemEl = dragList = dragItem = dragItemIndex = hasDragged = null;
       }
 
     };

@@ -20,7 +20,7 @@
     "sub": true,      // true: Tolerate using `[]` notation when it can still be expressed in dot notation
     "boss": true,     // true: Tolerate assignments where comparisons would be expected
     "node": true,      // Node.js
-    "unused": false,
+    "unused": true,
     "strict": false,
     "trailing": true,
     "smarttabs": true,
