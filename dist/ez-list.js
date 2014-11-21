@@ -13,6 +13,7 @@ angular.module('ez.list', [])
     allowNesting: true, // allow items to be nested inside one another
     allowInsertion: true, // allow items to be inserted next to one another
     openOnSlide: true, // open an item when a drag item is slid under and to the right
+    closeOnDrag: false, // close item on drag init
     dropOnly: false, // only allow dragged items to be dropped on 1st level items
     xThreshold: 15, // Amount of drag (in px) required for left - right movement
     yThreshold: 5, // Amount of drag (in px) required for up - down movement
@@ -180,6 +181,13 @@ angular.module('ez.list', [])
 
         this.initDragContainer();
 
+        if (dragOptions.closeOnDrag) {
+          dragItem[dragOptions.collapsedField] = true;
+          dragListScope.$apply();
+        } else {
+          placeholderEl.style.height = $dragItemEl.height() + 'px';
+        }
+
         // prevent nested items within the dragged item from being accepted by a dropzone
         dragItemEl.classList.add(listContainerScope.options.acceptClass);
 
@@ -220,7 +228,6 @@ angular.module('ez.list', [])
         $dragItemEl.find('.ez-list-item-content').removeClass('ez-dropzone');
 
         dropInteracts = interact('.ez-dropzone').dropzone({
-          //accept: '.ez-draggable',
           ondragenter: this.enter.bind(this),
           ondragleave: this.leave.bind(this),
           ondrop: this.drop.bind(this)
@@ -309,8 +316,6 @@ angular.module('ez.list', [])
         if (listContainerScope.options.dropOnly) {
           listContainerEl = null;
         }
-
-        //dropItem = dropList = dropItemEl = $dropItemEl = null;
       },
 
       /**
@@ -388,15 +393,13 @@ angular.module('ez.list', [])
       end: function() {
         interact.dynamicDrop(false);
 
+        if (!placeholderEl.parentNode) {
+          return;
+        }
+
         var index = this.getPlaceholderIndex();
 
-        if (!dropList) {
-          if (!placeholderEl.parentNode) {
-            return;
-          }
-
-          dropList = angular.element(placeholderEl.parentNode).scope().item;
-        }
+        dropList = angular.element(placeholderEl.parentNode).scope().item;
 
         dragItemEl.classList.remove(dragOptions.acceptClass);
 
@@ -445,22 +448,6 @@ angular.module('ez.list', [])
         dropItemEl = el;
         $dropItemEl = angular.element(el);
         dropItem = $dropItemEl.scope().item;
-
-        if ($dropItemEl.hasClass('ez-list')) {
-          dropList = $dropItemEl.isolateScope().item;
-        } else {
-          if (!el || (el.tagName !== 'LI' && el.tagName !== 'UL')) {
-            return;
-          }
-
-          if (placeholderEl.previousElementSibling) {
-            dropList = $dropItemEl.parent().scope().item;
-          } else {
-            // droplist is inside
-            dropList = $dropItemEl.scope().item;
-          }
-        }
-
       },
 
       /**
@@ -497,8 +484,6 @@ angular.module('ez.list', [])
         }
 
         this.setDropItem(placeholderEl.previousElementSibling);
-
-        dropList = null;
 
         if (listContainerScope.options.openOnSlide && dropItem[listContainerScope.options.collapsedField] === true) {
           dropItem[listContainerScope.options.collapsedField] = false;

@@ -73,6 +73,13 @@
 
         this.initDragContainer();
 
+        if (dragOptions.closeOnDrag) {
+          dragItem[dragOptions.collapsedField] = true;
+          dragListScope.$apply();
+        } else {
+          placeholderEl.style.height = $dragItemEl.height() + 'px';
+        }
+
         // prevent nested items within the dragged item from being accepted by a dropzone
         dragItemEl.classList.add(listContainerScope.options.acceptClass);
 
@@ -113,7 +120,6 @@
         $dragItemEl.find('.ez-list-item-content').removeClass('ez-dropzone');
 
         dropInteracts = interact('.ez-dropzone').dropzone({
-          //accept: '.ez-draggable',
           ondragenter: this.enter.bind(this),
           ondragleave: this.leave.bind(this),
           ondrop: this.drop.bind(this)
@@ -202,8 +208,6 @@
         if (listContainerScope.options.dropOnly) {
           listContainerEl = null;
         }
-
-        //dropItem = dropList = dropItemEl = $dropItemEl = null;
       },
 
       /**
@@ -281,15 +285,13 @@
       end: function() {
         interact.dynamicDrop(false);
 
+        if (!placeholderEl.parentNode) {
+          return;
+        }
+
         var index = this.getPlaceholderIndex();
 
-        if (!dropList) {
-          if (!placeholderEl.parentNode) {
-            return;
-          }
-
-          dropList = angular.element(placeholderEl.parentNode).scope().item;
-        }
+        dropList = angular.element(placeholderEl.parentNode).scope().item;
 
         dragItemEl.classList.remove(dragOptions.acceptClass);
 
@@ -338,22 +340,6 @@
         dropItemEl = el;
         $dropItemEl = angular.element(el);
         dropItem = $dropItemEl.scope().item;
-
-        if ($dropItemEl.hasClass('ez-list')) {
-          dropList = $dropItemEl.isolateScope().item;
-        } else {
-          if (!el || (el.tagName !== 'LI' && el.tagName !== 'UL')) {
-            return;
-          }
-
-          if (placeholderEl.previousElementSibling) {
-            dropList = $dropItemEl.parent().scope().item;
-          } else {
-            // droplist is inside
-            dropList = $dropItemEl.scope().item;
-          }
-        }
-
       },
 
       /**
@@ -390,8 +376,6 @@
         }
 
         this.setDropItem(placeholderEl.previousElementSibling);
-
-        dropList = null;
 
         if (listContainerScope.options.openOnSlide && dropItem[listContainerScope.options.collapsedField] === true) {
           dropItem[listContainerScope.options.collapsedField] = false;

@@ -39,7 +39,8 @@
   margin: 0;
   padding: 0;
 }
-.ez-list .ez-list-items .ez-list-items {
+.ez-list .ez-list-items .ez-list-items,
+.ez-list .ez-drag-container .ez-list-items {
   margin-left: 20px;
 }
 .ez-list .ez-drag-container {
