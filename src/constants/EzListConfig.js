@@ -15,6 +15,7 @@
     dropOnly: false, // only allow dragged items to be dropped on 1st level items
     xThreshold: 25, // Amount of drag (in px) required for left - right movement
     yThreshold: 5, // Amount of drag (in px) required for up - down movement
+    bindMethods: {} // transcluded methods to bind to the scope
   });
 
 })();

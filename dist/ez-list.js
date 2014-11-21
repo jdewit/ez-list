@@ -22,6 +22,7 @@ angular.module('ez.list', []);
     dropOnly: false, // only allow dragged items to be dropped on 1st level items
     xThreshold: 25, // Amount of drag (in px) required for left - right movement
     yThreshold: 5, // Amount of drag (in px) required for up - down movement
+    bindMethods: {} // transcluded methods to bind to the scope
   });
 
 })();
@@ -90,7 +91,7 @@ angular.module('ez.list', []);
 (function() {
   'use strict';
 
-  angular.module('ez.list').directive('ezListItem', ['Draggable', '$compile', function(Draggable, $compile) {
+  angular.module('ez.list').directive('ezListItem', ['Draggable', function(Draggable) {
     return {
       restrict: 'C',
       link: function (scope, $element) {
@@ -101,6 +102,10 @@ angular.module('ez.list', []);
           scope.options.transclude(scope, function(clone) {
             angular.element(element.children[0].children[0]).append(clone);
           });
+        }
+
+        for (var k in scope.options.bindMethods) {
+          scope[k] = scope.options.bindMethods[k];
         }
 
         $element.on(interact.supportsTouch() ? 'touchstart' : 'mousedown', function(e) {
@@ -294,6 +299,8 @@ angular.module('ez.list', []);
           newListContainerEl = $dropItemEl.closest('.ez-list')[0];
         }
 
+        dropItem = $dropItemEl.scope().item;
+
         newListContainerEl.classList.add('ez-list-target');
 
         if (newListContainerEl === listContainerEl) {
@@ -458,6 +465,8 @@ angular.module('ez.list', []);
           dragList[dragListScope.options.childrenField].splice(dragItemIndex, 0, dragItem);
         }
 
+        dragListScope.options.onMove(dragItem, dropItem);
+
         dragListScope.$apply();
       },
 
@@ -519,6 +528,8 @@ angular.module('ez.list', []);
           return;
         }
 
+        dropItem = scope.item;
+
         if (scope.options.openOnSlide && scope.item[scope.options.collapsedField] === true) {
           scope.item[scope.options.collapsedField] = false;
 
@@ -566,7 +577,7 @@ angular.module('ez.list', []);
 
         this.unsetDropzones();
 
-        listContainerEl = $dragItemEl = dragItemEl = dragList = dragItem = dragItemIndex = hasDragged = null;
+        listContainerEl = $dragItemEl = dragItemEl = dragList = dragItem = dragItemIndex = hasDragged = dropItem = null;
       }
 
     };

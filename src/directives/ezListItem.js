@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('ez.list').directive('ezListItem', ['Draggable', '$compile', function(Draggable, $compile) {
+  angular.module('ez.list').directive('ezListItem', ['Draggable', function(Draggable) {
     return {
       restrict: 'C',
       link: function (scope, $element) {
@@ -12,6 +12,10 @@
           scope.options.transclude(scope, function(clone) {
             angular.element(element.children[0].children[0]).append(clone);
           });
+        }
+
+        for (var k in scope.options.bindMethods) {
+          scope[k] = scope.options.bindMethods[k];
         }
 
         $element.on(interact.supportsTouch() ? 'touchstart' : 'mousedown', function(e) {

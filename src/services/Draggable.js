@@ -161,6 +161,8 @@
           newListContainerEl = $dropItemEl.closest('.ez-list')[0];
         }
 
+        dropItem = $dropItemEl.scope().item;
+
         newListContainerEl.classList.add('ez-list-target');
 
         if (newListContainerEl === listContainerEl) {
@@ -325,6 +327,8 @@
           dragList[dragListScope.options.childrenField].splice(dragItemIndex, 0, dragItem);
         }
 
+        dragListScope.options.onMove(dragItem, dropItem);
+
         dragListScope.$apply();
       },
 
@@ -386,6 +390,8 @@
           return;
         }
 
+        dropItem = scope.item;
+
         if (scope.options.openOnSlide && scope.item[scope.options.collapsedField] === true) {
           scope.item[scope.options.collapsedField] = false;
 
@@ -433,7 +439,7 @@
 
         this.unsetDropzones();
 
-        listContainerEl = $dragItemEl = dragItemEl = dragList = dragItem = dragItemIndex = hasDragged = null;
+        listContainerEl = $dragItemEl = dragItemEl = dragList = dragItem = dragItemIndex = hasDragged = dropItem = null;
       }
 
     };
