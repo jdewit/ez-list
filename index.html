@@ -7,10 +7,11 @@
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
-  <script src="//cdn.rawgit.com/taye/interact.js/master/interact.js"></script>
-  <script src="//cdn.rawgit.com/jdewit/ez-stringify/master/ez-stringify.js"></script>
-  <!--<script src="bower_components/interact/interact.js"></script>-->
+  <script src="//rawgit.com/taye/interact.js/master/interact.js"></script>
+  <script src="//rawgit.com/jdewit/ez-transclude/master/dist/ez-transclude.min.js"></script>
   <!--dependencies end -->
+
+  <script src="//cdn.rawgit.com/jdewit/ez-stringify/master/ez-stringify.js"></script>
 
   <link href="dist/ez-list.min.css" rel="stylesheet">
   <link href="demo/css/style.css" rel="stylesheet">
@@ -73,14 +74,24 @@
         ]
       };
 
+      $scope.config1 = {
+        methods: {
+          hey: function(item) {
+            console.log('I was called from transcluded content', item);
+            alert('I was called from transcluded content', item);
+          }
+        }
+      };
+
       $scope.config2 = {
         childrenField: 'children',
         dropOnly: true,
         allowDrag: false,
         template: 'config2-tpl',
         onDrop: function(item, target) {
-          console.log('item dropped on drop only list -> ', item);
-          console.log('target', target);
+          console.log('item dropped on drop only list -> ', item, target);
+
+          return false;
         }
       };
 
@@ -91,6 +102,8 @@
         }
       };
 
+      $scope.style = 'style1';
+
     }])
 ;
 
@@ -99,9 +112,13 @@
 <body ng-app="myApp">
   <div ng-controller="AppCtrl" class="container">
     <div class="page-header">
+      <select style="width: 100px; float:right" class="form-control" ng-model="style">
+        <option value="">Default</option>
+        <option value="style1">Style 1</option>
+      </select>
       <h1>ez-list</h1>
     </div>
-    <div class="page-body">
+    <div class="page-body {{ style }}">
 
       <div class="row">
         <div class="col-lg-3 col-md-3">
@@ -119,17 +136,17 @@
           <h3>List 1 - <small><a ng-click="showList1 = !showList1">show json</a></small></h3>
           <hr>
           <div ng-if="showList1"><pre>{{ list | stringify }}</pre></div>
-          <div ez-list="list">
+          <div ez-list="list" ez-config="config1">
             <a class="ez-toggle-btn" ng-click="item[options.collapsedField] = !item[options.collapsedField]"g>
               <i class="ez-arrow-right glyphicon glyphicon-chevron-right"g></i>
               <i class="ez-arrow-down glyphicon glyphicon-chevron-down"g></i>
             </a>
 
-            {{ item.text }}
+            {{ item.text }} 
 
-            <a class="ez-list-item-remove" ng-click="remove()"g>
-              <i class="glyphicon glyphicon-trash"g></i>
-            </a>
+            <a class="remove" ng-click="remove()"><i class="glyphicon glyphicon-trash"g></i></a>
+
+            <a class="question" ng-click="hey(item)"><i class="glyphicon glyphicon-question-sign"></i></a>
           </div>
         </div>
       </div>

@@ -21,6 +21,12 @@
         // give child items access to the transclude
         scope.options.transclude = transclude;
 
+        scope.depth = 0;
+
+        for (var k in scope.options.methods) {
+          scope[k] = scope.options.methods[k];
+        }
+
         var element = $element[0];
 
         if (scope.options.dropOnly) {

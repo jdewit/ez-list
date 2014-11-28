@@ -7,7 +7,7 @@
     childrenField: 'items',
     collapsedField: 'collapsed',
     showPlaceholder: true, // show placeholder where item will drop
-    collapsed: true, // initially item collapsed state
+    collapsed: true, // initial item collapsed state
     allowDrag: true, // allow items to be draggable
     allowNesting: true, // allow items to be nested inside one another
     allowInsertion: true, // allow items to be inserted next to one another
@@ -16,7 +16,7 @@
     dropOnly: false, // only allow dragged items to be dropped on 1st level items
     xThreshold: 15, // Amount of drag (in px) required for left - right movement
     yThreshold: 5, // Amount of drag (in px) required for up - down movement
-    bindMethods: {} // transcluded methods to bind to the scope
+    methods: {} // transcluded methods to bind to the scope
   });
 
 })();

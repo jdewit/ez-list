@@ -17,14 +17,58 @@
 .list2 .ez-dragover {
   border: 1px red solid;
 }
-.ez-list-item-content {
-  background-color: #f8faff !important;
-}
-.ez-list-item-content a,
-.ez-list-item-content span {
-  cursor: pointer;
-}
 .ez-list-empty {
   height: 100px;
   background-color: #eee;
+}
+.ez-list .remove,
+.ez-list .question {
+  float: right;
+  width: 16px;
+  cursor: pointer;
+}
+
+.style1 .ez-list .ez-list-item-content {
+  background-color: #f8faff !important;
+}
+.style1 .ez-list .ez-list-item-content a,
+.style1 .ez-list .ez-list-item-content span {
+  cursor: pointer;
+}
+.style1 .ez-list .ez-empty.ez-list-item-container {
+  padding-bottom: 0;
+}
+.style1 .ez-list .ez-empty > .ez-list-item-content .ez-toggle-btn {
+  display: none;
+}
+.style1 .ez-list.ez-droponly .ez-list-item-content {
+  padding-left: 10px;
+}
+.style1 .ez-list.ez-droponly .ez-toggle-btn {
+  display: none;
+}
+.style1 .ez-list .ez-arrow-down {
+  display: inline-block;
+}
+.style1 .ez-list .ez-arrow-right {
+  display: none;
+}
+.style1 .ez-list .ez-list-item-container {
+  padding-bottom: 5px;
+}
+.style1 .ez-list .ez-collapsed.ez-list-item-container {
+  padding-bottom: 0;
+}
+.style1 .ez-list .ez-collapsed .ez-arrow-right {
+  display: inline-block;
+}
+.style1 .ez-list .ez-collapsed .ez-arrow-down {
+  display: none;
+}
+.style1 .ez-list .ez-list-item-content {
+  min-height: 40px;
+  padding: 10px;
+  color: #7c9eb2;
+  border: 1px solid #dae2ea;
+  background-color: #fff;
 }
