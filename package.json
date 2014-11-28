@@ -2,7 +2,7 @@
   "name": "ez-list",
   "description": "Angular recursive list directive",
   "keywords": [],
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "author": "Joris de Wit",
   "repository": {
