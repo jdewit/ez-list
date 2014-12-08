@@ -8,13 +8,15 @@
       transclude: true,
       scope: {
         item: '=?ezList',
-        config: '=?ezConfig'
+        config: '=?',
+        selectedItems: '=?'
       },
-      template: '<div class="ez-list" ng-class="{\'ez-list-draggable\': options.allowDrag, \'ez-no-placeholder\': !options.showPlaceholder, \'ez-droponly\': options.dropOnly, \'ez-list-empty\': !hasItems}">' +
+      template: '<div class="ez-list" ng-class="{\'ez-list-draggable\': options.allowDrag, \'ez-list-dropable\': options.allowDrop, \'ez-no-placeholder\': !options.showPlaceholder, \'ez-droponly\': options.dropOnly, \'ez-list-empty\': !hasItems}">' +
         '<ul class="ez-list-items">' +
           '<li class="ez-list-item" ng-repeat="item in item[options.childrenField]" ng-include="\'ez-list-tpl.html\'"></li>' +
         '</ul>' +
         '</div>',
+      controller: 'EzListCtrl',
       link: function(scope, $element, attrs, ctrl, transclude) {
         scope.options = angular.extend({}, EzListConfig, scope.config);
 
@@ -23,8 +25,8 @@
 
         scope.depth = 0;
 
-        for (var k in scope.options.methods) {
-          scope[k] = scope.options.methods[k];
+        for (var k in scope.options.transcludeMethods) {
+          scope[k] = scope.options.transcludeMethods[k];
         }
 
         var element = $element[0];
@@ -35,6 +37,12 @@
           scope.options.openOnSlide = false;
           scope.options.showPlaceholder = false;
         }
+
+        scope.$watch('selectedItems', function(newVal, oldVal) {
+          if (newVal !== oldVal) {
+            scope.$broadcast('ez_list.selected_changed');
+          }
+        });
 
         if (!scope.item) {
           scope.item = {};
@@ -56,8 +64,8 @@
               Draggable.setDropzone(element, scope.options);
             }
           });
-
         }
+
       }
     };
   }]);

@@ -3,10 +3,10 @@
 
 <head>
   <!--dependencies start -->
-  <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.js"></script>
   <script src="//rawgit.com/taye/interact.js/master/interact.js"></script>
   <script src="//rawgit.com/jdewit/ez-transclude/master/dist/ez-transclude.min.js"></script>
   <!--dependencies end -->
@@ -14,7 +14,8 @@
   <script src="//cdn.rawgit.com/jdewit/ez-stringify/master/ez-stringify.js"></script>
 
   <link href="dist/ez-list.min.css" rel="stylesheet">
-  <link href="demo/css/style.css" rel="stylesheet">
+  <link href="demo/css/style1.css" rel="stylesheet">
+  <link href="demo/css/demo.css" rel="stylesheet">
   <script src="dist/ez-list.js"></script>
   <script src="dist/ez-list-tpl.js"></script>
 
@@ -26,6 +27,7 @@
       EzListConfig.itemField = '';
 
       $scope.list = {
+        text: 'Root',
         items: [
           {
             text: '1',
@@ -66,39 +68,75 @@
       $scope.list2 = {
         children: [
           {
-            text: 'Target 1'
+            id: '1',
+            text: 'Target 1',
+            children: [
+              {
+                id: '1a',
+                text: 'Target 1a',
+              },
+              {
+                id: '1b',
+                text: 'Target 1b',
+              }
+            ]
           },
           {
-            text: 'Target 2'
+            id: '2',
+            text: 'Target 2',
+            children: [
+              {
+                id: '2a',
+                text: 'Target 2a',
+              }
+            ]
           }
         ]
       };
 
       $scope.config1 = {
-        methods: {
+        transcludeMethods: {
           hey: function(item) {
             console.log('I was called from transcluded content', item);
             alert('I was called from transcluded content', item);
           }
+        },
+        api: {
+          onMove: function(src, dest) {
+            console.log(src.text + ' moved to ' + dest.text);
+          }
         }
+
       };
+
+      $scope.selected2 = $scope.list2.children[0];
 
       $scope.config2 = {
         childrenField: 'children',
         dropOnly: true,
         allowDrag: false,
+        collapsed: false,
         template: 'config2-tpl',
-        onDrop: function(item, target) {
-          console.log('item dropped on drop only list -> ', item, target);
+        api: {
+          onDrop: function(item, target) {
+            console.log('item dropped on drop only list -> ', item, target);
 
-          return false;
+            return false;
+          }
+        },
+        transcludeMethods: {
+          selectTarget: function(item) {
+            $scope.selected2 = item;
+          }
         }
       };
 
       $scope.trashConfig = {
         dropOnly: true,
-        onDrop: function(item) {
-          console.log('item trashed -> ' + item.text);
+        api: {
+          onDrop: function(item) {
+            console.log('item trashed -> ' + item.text);
+          }
         }
       };
 
@@ -125,24 +163,24 @@
           <h3>Drop Only List</h3>
           <hr>
 
-          <div class="list2" ez-list="list2" ez-config="config2">
-            {{ item.text }}
+          <div class="list2" ez-list="list2" config="config2" selected-items="selected2">
+            <a ng-click="selectTarget(item)">{{ item.text }}</a>
           </div>
 
-          <div id="trash" ez-list ez-config="trashConfig"></div>
+          <div id="trash" ez-list config="trashConfig"></div>
 
         </div>
         <div class="col-lg-7 col-md-7">
           <h3>List 1 - <small><a ng-click="showList1 = !showList1">show json</a></small></h3>
           <hr>
           <div ng-if="showList1"><pre>{{ list | stringify }}</pre></div>
-          <div ez-list="list" ez-config="config1">
+          <div ez-list="list" config="config1">
             <a class="ez-toggle-btn" ng-click="item[options.collapsedField] = !item[options.collapsedField]"g>
               <i class="ez-arrow-right glyphicon glyphicon-chevron-right"g></i>
               <i class="ez-arrow-down glyphicon glyphicon-chevron-down"g></i>
             </a>
 
-            {{ item.text }} 
+            {{ item.text }} - (depth={{ depth }})
 
             <a class="remove" ng-click="remove()"><i class="glyphicon glyphicon-trash"g></i></a>
 

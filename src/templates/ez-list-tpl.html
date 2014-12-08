@@ -1,6 +1,6 @@
-<div class="ez-list-item-container level{{ $parent.$index }}" ng-class="{'ez-collapsed': item[options.collapsedField], 'ez-empty': !hasItems}">
+<div class="ez-list-item-container" ng-class="{'ez-collapsed': item[options.collapsedField], 'ez-empty': !hasItems}">
 
-  <div class="ez-list-item-content ez-dropzone ez-draggable depth-{{ depth }}" ez-drag-handle></div>
+  <div class="ez-list-item-content ez-dropzone ez-draggable depth-{{ depth }}" ng-class="{'ez-active': item._active, 'ez-selected': item._selected}" ez-drag-handle></div>
   <ul class="ez-list-items depth-{{depth}}" ng-if="!hasItems || !item[options.collapsedField]" ng-init="depth = depth + 1">
     <li class="ez-list-item" ng-repeat="item in item[options.childrenField]" ng-include="'ez-list-tpl.html'"></li>
   </ul>

@@ -46,7 +46,8 @@ module.exports = function(grunt) {
       },
       demo: {
         files: {
-          'demo/css/style.css': 'demo/less/*.less'
+          'demo/css/style1.css': 'demo/less/style1.less',
+          'demo/css/demo.css': 'demo/less/demo.less'
         }
       }
     },

@@ -4,12 +4,14 @@
 angular.module('ez.list', [])
 .constant('EzListConfig', {
     acceptClass: 'ez-dragging', // item class to accept in dropzones
+    idField: 'id',
     listChildrenField: 'items',
     childrenField: 'items',
     collapsedField: 'collapsed',
     showPlaceholder: true, // show placeholder where item will drop
     collapsed: true, // initial item collapsed state
     allowDrag: true, // allow items to be draggable
+    allowDrop: true, // allow items to be dropped into this list
     allowNesting: true, // allow items to be nested inside one another
     allowInsertion: true, // allow items to be inserted next to one another
     openOnSlide: true, // open an item when a drag item is slid under and to the right
@@ -17,21 +19,42 @@ angular.module('ez.list', [])
     dropOnly: false, // only allow dragged items to be dropped on 1st level items
     xThreshold: 15, // Amount of drag (in px) required for left - right movement
     yThreshold: 5, // Amount of drag (in px) required for up - down movement
-    methods: {} // transcluded methods to bind to the scope
-}).directive('ezList', ['EzListConfig', 'Draggable', function(EzListConfig, Draggable) {
+    api: { // allow user to add callbacks to significant events
+      onMove: null, // called when an item is moved
+      onDrop: null // called when an item is dropped onto another
+    },
+    transcludeMethods: {} // allow for binding methods to the transcluded scope
+}).controller('EzListCtrl', ['$scope', function($scope) {
+
+    $scope.init = function() {
+
+    };
+
+
+}])
+
+})();
+
+
+(function() {
+  'use strict';
+
+  angular.module('ez.list').directive('ezList', ['EzListConfig', 'Draggable', function(EzListConfig, Draggable) {
     return {
       restrict: 'A',
       replace: true,
       transclude: true,
       scope: {
         item: '=?ezList',
-        config: '=?ezConfig'
+        config: '=?',
+        selectedItems: '=?'
       },
-      template: '<div class="ez-list" ng-class="{\'ez-list-draggable\': options.allowDrag, \'ez-no-placeholder\': !options.showPlaceholder, \'ez-droponly\': options.dropOnly, \'ez-list-empty\': !hasItems}">' +
+      template: '<div class="ez-list" ng-class="{\'ez-list-draggable\': options.allowDrag, \'ez-list-dropable\': options.allowDrop, \'ez-no-placeholder\': !options.showPlaceholder, \'ez-droponly\': options.dropOnly, \'ez-list-empty\': !hasItems}">' +
         '<ul class="ez-list-items">' +
           '<li class="ez-list-item" ng-repeat="item in item[options.childrenField]" ng-include="\'ez-list-tpl.html\'"></li>' +
         '</ul>' +
         '</div>',
+      controller: 'EzListCtrl',
       link: function(scope, $element, attrs, ctrl, transclude) {
         scope.options = angular.extend({}, EzListConfig, scope.config);
 
@@ -40,8 +63,8 @@ angular.module('ez.list', [])
 
         scope.depth = 0;
 
-        for (var k in scope.options.methods) {
-          scope[k] = scope.options.methods[k];
+        for (var k in scope.options.transcludeMethods) {
+          scope[k] = scope.options.transcludeMethods[k];
         }
 
         var element = $element[0];
@@ -52,6 +75,12 @@ angular.module('ez.list', [])
           scope.options.openOnSlide = false;
           scope.options.showPlaceholder = false;
         }
+
+        scope.$watch('selectedItems', function(newVal, oldVal) {
+          if (newVal !== oldVal) {
+            scope.$broadcast('ez_list.selected_changed');
+          }
+        });
 
         if (!scope.item) {
           scope.item = {};
@@ -73,23 +102,51 @@ angular.module('ez.list', [])
               Draggable.setDropzone(element, scope.options);
             }
           });
-
         }
+
       }
     };
 }])
-.directive('ezListItem', ['Draggable', function(Draggable) {
+.directive('ezListItemContent', ['Draggable', function(Draggable) {
     return {
       restrict: 'C',
       link: function (scope, $element) {
         var element = $element[0];
 
+        scope.item._parentItem = scope.$parent.$parent.item;
+
         if (scope.options.transclude) {
           // add transcluded item content
           scope.options.transclude(scope, function(clone) {
-            angular.element(element.children[0].children[0]).append(clone);
+            angular.element(element).append(clone);
           });
         }
+
+        var recurseParents = function(item) {
+          if (item.hasOwnProperty('_parentItem')) {
+            recurseParents(item._parentItem);
+          }
+
+          item._active = true;
+        };
+
+        var setSelected = function() {
+          if (!scope.selectedItems) {
+            return;
+          }
+
+          if (Array.isArray(scope.selectedItems)) {
+            if ($.grep(scope._selectedItems, function(item) {
+              return !!item ? item[scope.options.idField] === scope.item[scope.options.idField] : false;
+            }).length) {
+              scope.item._selected = true;
+              recurseParents(scope.item, true);
+            }
+          } else if (scope.selectedItems[scope.options.idField] === scope.item[scope.options.idField]) {
+              scope.item._selected = true;
+              recurseParents(scope.item, true);
+          }
+        };
 
         $element.on(interact.supportsTouch() ? 'touchstart' : 'mousedown', function(e) {
           if (scope.options.allowDrag === true || (typeof scope.options.allowDrag === 'function' && scope.options.allowDrag(e, scope.item))) {
@@ -109,10 +166,14 @@ angular.module('ez.list', [])
           scope.$parent.$parent.item[scope.options.childrenField].splice(scope.$parent.$parent.item[scope.options.childrenField].indexOf(scope.item), 1);
         };
 
-        scope.$on('$destroy', function() {
-          Draggable.unsetDropzone($element[0]);
+        scope.$on('ez_list.selected_changed', function() {
+          delete scope.item._active;
+          delete scope.item._selected;
+          setSelected();
         });
 
+        // init
+        setSelected();
       }
     };
 }])
@@ -135,7 +196,6 @@ angular.module('ez.list', [])
         dropItemEl,
         $dropItemEl,
         dropItem,
-        dropList,
         dropInteracts,
         prevDragDirectionX, // which way the item is being dragged ['left', 'right']
         listContainerEl,
@@ -169,7 +229,7 @@ angular.module('ez.list', [])
           // allow drag events to finish first
           setTimeout(function() {
             self.destroy();
-          }, 50);
+          });
         });
 
         $dragItemEl = angular.element(e.target).closest('.ez-list-item');
@@ -217,7 +277,7 @@ angular.module('ez.list', [])
           onmove: self.move.bind(this),
           onend: self.end.bind(this)
         }).actionChecker(function(e, action) {
-          if (typeof e.button !== 'undefined') {
+          if (!!e && typeof e.button !== 'undefined') {
             return e.button === 0 ? action : null; // disable right click
           }
 
@@ -228,7 +288,6 @@ angular.module('ez.list', [])
         interact.simulate('drag', dragItemEl, e);
 
         dragItemEl.classList.add('ez-dragging');
-
       },
 
       setDropzones: function() {
@@ -292,8 +351,6 @@ angular.module('ez.list', [])
           $listContainerEl = angular.element(listContainerEl);
           listContainerScope = $listContainerEl.isolateScope();
 
-          console.log('enter', listContainerScope);
-
           listContainerEl.classList.add('ez-list-target');
 
           _listContainerEl = null;
@@ -335,12 +392,10 @@ angular.module('ez.list', [])
           return;
         }
 
-        console.log('drrooop');
-        if (listContainerScope.options.hasOwnProperty('onDrop')) {
-          var allowDrop = listContainerScope.options.onDrop(dragItem, $dropItemEl.scope().item);
+        if (typeof listContainerScope.options.api.onDrop === 'function') {
+          var allowDrop = listContainerScope.options.api.onDrop(dragItem, $dropItemEl.scope().item);
 
           if (allowDrop === false) {
-            console.log('hooo');
             // make item go back to original position
             listContainerEl = null;
           }
@@ -419,7 +474,7 @@ angular.module('ez.list', [])
             dropItemEl.children[0].children[0].classList.remove('ez-dragover');
           }
 
-          dropList = angular.element(placeholderEl.parentNode).scope().item;
+          dropItem = angular.element(placeholderEl.parentNode).scope().item;
 
           dragItemEl.classList.remove(dragOptions.acceptClass);
 
@@ -429,24 +484,23 @@ angular.module('ez.list', [])
 
           dragListScope.$apply();
 
-          console.log('end', listContainerEl);
           if (!!listContainerEl && listContainerScope.options.dropOnly) {
             return;
           } else if (!!listContainerEl && listContainerScope.options.allowInsertion) {
             // add drag item to target items array
-            if (!!dropList && dropList.hasOwnProperty(listContainerScope.options.childrenField)) {
-              dropList[listContainerScope.options.childrenField].splice(index, 0, dragItem);
+            if (!!dropItem && dropItem.hasOwnProperty(listContainerScope.options.childrenField)) {
+              dropItem[listContainerScope.options.childrenField].splice(index, 0, dragItem);
             } else {
-              dropList[listContainerScope.options.childrenField] = [dragItem];
+              dropItem[listContainerScope.options.childrenField] = [dragItem];
+            }
+
+            if (typeof dragListScope.options.api.onMove === 'function') {
+              console.log('ey', dropItem);
+              dragListScope.options.api.onMove(dragItem, dropItem);
             }
           } else {
             // return item back to origin
-            console.log('hahha', dragList, dragItemIndex, dragItem);
             dragList[dragListScope.options.childrenField].splice(dragItemIndex, 0, dragItem);
-          }
-
-          if (typeof dragListScope.onMove === 'function') {
-            dragListScope.options.onMove(dragItem, dropItem);
           }
 
           listContainerScope.$apply();
