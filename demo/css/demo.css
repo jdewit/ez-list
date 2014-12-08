@@ -1,0 +1,49 @@
+#trash {
+  margin-top: 60px;
+  height: 300px;
+  background-color: #eee;
+  background: url('../images/trash1.png') no-repeat;
+  background-size: contain;
+  border: none;
+}
+#trash ul {
+  padding: 0;
+  margin: 0;
+}
+#trash.ez-list-target {
+  background: url('../images/trash2.png') no-repeat;
+  background-size: contain;
+}
+.list2 {
+  border: 1px solid #dae2ea;
+}
+.list2 .ez-dragover {
+  border: 1px red solid;
+}
+.list2 .ez-selected {
+  font-weight: bold;
+}
+.list2 .ez-active.depth-0 {
+  background-color: #ccc !important;
+}
+.list2 a,
+.list2 a:active,
+.list2 a:hover {
+  text-decoration: none;
+  display: block;
+}
+.list2 .ez-list-item-content.depth-1 {
+  padding: 10px 0;
+  background-color: #fff;
+  border: none !important;
+}
+.ez-list-empty {
+  height: 100px;
+  background-color: #eee;
+}
+.ez-list .remove,
+.ez-list .question {
+  float: right;
+  width: 16px;
+  cursor: pointer;
+}

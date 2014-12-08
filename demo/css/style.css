@@ -14,8 +14,25 @@
   background: url('../images/trash2.png') no-repeat;
   background-size: contain;
 }
+.list2 {
+  border: 1px solid #dae2ea;
+}
 .list2 .ez-dragover {
   border: 1px red solid;
+}
+.list2 .ez-selected {
+  font-weight: bold;
+}
+.list2 a,
+.list2 a:active,
+.list2 a:hover {
+  text-decoration: none;
+  display: block;
+}
+.list2 .depth-1 {
+  padding: 0;
+  background-color: #fff;
+  border: none !important;
 }
 .ez-list-empty {
   height: 100px;
@@ -29,7 +46,11 @@
 }
 
 .style1 .ez-list .ez-list-item-content {
-  background-color: #f8faff !important;
+  background-color: #f8faff;
+  min-height: 40px;
+  padding: 10px;
+  color: #7c9eb2;
+  border: 1px solid #dae2ea;
 }
 .style1 .ez-list .ez-list-item-content a,
 .style1 .ez-list .ez-list-item-content span {
@@ -64,11 +85,4 @@
 }
 .style1 .ez-list .ez-collapsed .ez-arrow-down {
   display: none;
-}
-.style1 .ez-list .ez-list-item-content {
-  min-height: 40px;
-  padding: 10px;
-  color: #7c9eb2;
-  border: 1px solid #dae2ea;
-  background-color: #fff;
 }

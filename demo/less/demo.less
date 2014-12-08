@@ -18,13 +18,30 @@
 }
 
 .list2 {
+  border: 1px solid #dae2ea;
 
   .ez-dragover {
     border: 1px red solid;
   }
 
-}
+  .ez-selected {
+    font-weight: bold;
+  }
+  .ez-active.depth-0 {
+    background-color: #ccc !important;
+  }
 
+  a, a:active, a:hover {
+    text-decoration: none;
+    display: block;
+  }
+
+  .ez-list-item-content.depth-1 {
+    padding: 10px 0;
+    background-color: #fff;
+    border: none !important;
+  }
+}
 
 .ez-list-empty {
   height: 100px;

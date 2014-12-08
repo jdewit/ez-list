@@ -34,7 +34,6 @@
   display: none !important;
 }
 .ez-list .ez-list-items {
-  background-color: transparent;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -61,6 +60,9 @@
 .ez-list .ez-list-item .ez-toggle-btn {
   cursor: pointer;
 }
+.ez-list .ez-list-item-content {
+  min-height: 2em;
+}
 .ez-list.ez-drag-over .ez-placeholder {
   display: block;
 }
@@ -69,4 +71,31 @@
 }
 .ez-list.ez-drag-over .ez-drag-container {
   display: block;
+}
+.ez-list .ez-empty.ez-list-item-container {
+  padding-bottom: 0;
+}
+.ez-list .ez-empty > .ez-list-item-content .ez-toggle-btn {
+  display: none;
+}
+.ez-list.ez-droponly .ez-toggle-btn {
+  display: none;
+}
+.ez-list .ez-arrow-down {
+  display: inline-block;
+}
+.ez-list .ez-arrow-right {
+  display: none;
+}
+.ez-list .ez-list-item-container {
+  padding-bottom: 5px;
+}
+.ez-list .ez-collapsed.ez-list-item-container {
+  padding-bottom: 0;
+}
+.ez-list .ez-collapsed .ez-arrow-right {
+  display: inline-block;
+}
+.ez-list .ez-collapsed .ez-arrow-down {
+  display: none;
 }

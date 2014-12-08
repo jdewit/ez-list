@@ -1,0 +1,11 @@
+.style1 .ez-list .ez-list-item-content {
+  background-color: #f8faff;
+  min-height: 40px;
+  padding: 10px;
+  color: #7c9eb2;
+  border: 1px solid #dae2ea;
+}
+.style1 .ez-list .ez-list-item-content a,
+.style1 .ez-list .ez-list-item-content span {
+  cursor: pointer;
+}
