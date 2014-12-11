@@ -135,7 +135,6 @@ angular.module('ez.list', [])
             return;
           }
 
-          console.log('hhhhaaa', scope.selectedItems);
           if (Array.isArray(scope.selectedItems)) {
             if ($.grep(scope.selectedItems, function(item) {
               if (typeof item === 'string') {
