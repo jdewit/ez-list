@@ -135,13 +135,21 @@ angular.module('ez.list', [])
             return;
           }
 
+          console.log('hhhhaaa', scope.selectedItems);
           if (Array.isArray(scope.selectedItems)) {
-            if ($.grep(scope._selectedItems, function(item) {
-              return !!item ? item[scope.options.idField] === scope.item[scope.options.idField] : false;
+            if ($.grep(scope.selectedItems, function(item) {
+              if (typeof item === 'string') {
+                return scope.item[scope.options.idField] === item ? true : false;
+              } else {
+                return !!item && item[scope.options.idField] === scope.item[scope.options.idField] ? true : false;
+              }
             }).length) {
               scope.item._selected = true;
               recurseParents(scope.item, true);
             }
+          } else if (typeof scope.selectedItems === 'string' && scope.selectedItems === scope.item[scope.options.idField]) {
+              scope.item._selected = true;
+              recurseParents(scope.item, true);
           } else if (scope.selectedItems[scope.options.idField] === scope.item[scope.options.idField]) {
               scope.item._selected = true;
               recurseParents(scope.item, true);
