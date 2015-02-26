@@ -7,12 +7,16 @@
       link: function (scope, $element) {
         var element = $element[0];
 
+        if (scope.options.allowDrag === true || (typeof scope.options.allowDrag === 'function' && scope.options.allowDrag(scope.item))) {
+          Draggable.initDragItem(element, scope);
+        }
+
         scope.item._parentItem = scope.$parent.$parent.item;
 
         if (scope.options.transclude) {
           // add transcluded item content
           scope.options.transclude(scope, function(clone) {
-            angular.element(element).append(clone);
+            $element.append(clone);
           });
         }
 
@@ -48,12 +52,6 @@
               recurseParents(scope.item, true);
           }
         };
-
-        $element.on(interact.supportsTouch() ? 'touchstart' : 'mousedown', function(e) {
-          if (scope.options.allowDrag === true || (typeof scope.options.allowDrag === 'function' && scope.options.allowDrag(e, scope.item))) {
-            Draggable.init(e, scope);
-          }
-        });
 
         if (!scope.item.hasOwnProperty('collapsed')) {
           scope.item[scope.options.collapsedField] = scope.options.collapsed;

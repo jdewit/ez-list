@@ -2,6 +2,7 @@
   'use strict';
 
   angular.module('ez.list').constant('EzListConfig', {
+    mode: 'insert', // [insert, drop, disabled]
     acceptClass: 'ez-dragging', // item class to accept in dropzones
     idField: 'id',
     listChildrenField: 'items',
@@ -10,9 +11,7 @@
     showPlaceholder: true, // show placeholder where item will drop
     collapsed: true, // initial item collapsed state
     allowDrag: true, // allow items to be draggable
-    allowDrop: true, // allow items to be dropped into this list
-    allowNesting: true, // allow items to be nested inside one another
-    allowInsertion: true, // allow items to be inserted next to one another
+    allowNesting: true, // allow items to be nested inside one another, only applicable when mode = insert
     openOnSlide: true, // open an item when a drag item is slid under and to the right
     closeOnDrag: false, // close item on drag init
     dropOnly: false, // only allow dragged items to be dropped on 1st level items

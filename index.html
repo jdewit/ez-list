@@ -22,7 +22,7 @@
   <script>
     angular.module('myApp', ['ez.list', 'ez.stringify'])
 
-    .controller('AppCtrl', ['$scope', 'EzListConfig', function AppCtrl($scope, EzListConfig) {
+    .controller('AppCtrl', ['$scope', 'EzListConfig', '$q', function AppCtrl($scope, EzListConfig, $q) {
 
       EzListConfig.itemField = '';
 
@@ -103,7 +103,13 @@
         },
         api: {
           onMove: function(src, dest) {
+            var deferred = $q.defer();
+
             console.log(src.text + ' moved to ' + dest.text);
+
+            deferred.resolve();
+
+            return deferred.promise;
           }
         }
 
@@ -113,15 +119,19 @@
 
       $scope.config2 = {
         childrenField: 'children',
-        dropOnly: true,
+        mode: 'drop',
         allowDrag: false,
         collapsed: false,
         template: 'config2-tpl',
         api: {
           onDrop: function(item, target) {
+            var deferred = $q.defer();
+
             console.log('item dropped on drop only list -> ', item, target);
 
-            return false;
+            deferred.resolve();
+
+            return deferred.promise;
           }
         },
         transcludeMethods: {
@@ -132,10 +142,16 @@
       };
 
       $scope.trashConfig = {
-        dropOnly: true,
+        mode: 'drop',
         api: {
           onDrop: function(item) {
             console.log('item trashed -> ' + item.text);
+
+            var deferred = $q.defer();
+
+            deferred.resolve();
+
+            return deferred.promise;
           }
         }
       };

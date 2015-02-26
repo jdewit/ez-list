@@ -18,7 +18,7 @@
   border: 1px solid #dae2ea;
 }
 .list2 .ez-dragover {
-  border: 1px red solid;
+  border: 1px red solid !important;
 }
 .list2 .ez-selected {
   font-weight: bold;

@@ -11,12 +11,11 @@
         config: '=?',
         selectedItems: '=?'
       },
-      template: '<div class="ez-list" ng-class="{\'ez-list-draggable\': options.allowDrag, \'ez-list-dropable\': options.allowDrop, \'ez-no-placeholder\': !options.showPlaceholder, \'ez-droponly\': options.dropOnly, \'ez-list-empty\': !hasItems}">' +
+      template: '<div class="ez-list" ng-class="{\'ez-list-draggable\': options.allowDrag, \'ez-list-dropable\': options.mode == \'drop\', \'ez-no-placeholder\': !options.showPlaceholder, \'ez-droponly\': options.dropOnly, \'ez-list-empty\': !hasItems}">' +
         '<ul class="ez-list-items">' +
           '<li class="ez-list-item" ng-repeat="item in item[options.childrenField]" ng-include="\'ez-list-tpl.html\'"></li>' +
         '</ul>' +
         '</div>',
-      controller: 'EzListCtrl',
       link: function(scope, $element, attrs, ctrl, transclude) {
         scope.options = angular.extend({}, EzListConfig, scope.config);
 
@@ -31,8 +30,7 @@
 
         var element = $element[0];
 
-        if (scope.options.dropOnly) {
-          scope.options.allowInsertion = false;
+        if (scope.options.mode === 'drop') {
           scope.options.allowNesting = false;
           scope.options.openOnSlide = false;
           scope.options.showPlaceholder = false;
