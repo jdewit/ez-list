@@ -227,6 +227,7 @@ angular.module('ez.list', [])
       initDragItem: function(element, scope) {
         var self = this;
         interact(element).draggable({
+          manualStart: true,
           onstart: function(e) {
             self.start(e, scope);
           },
@@ -236,15 +237,21 @@ angular.module('ez.list', [])
           onend: function(e) {
             self.end(e);
           }
-        }).actionChecker(function(e, action) {
-          if (!!e && typeof e.button !== 'undefined') {
-            return e.button === 0 ? action : null; // disable right click
+        })
+        .on('down', function (e) {
+          var interaction = e.interaction;
+          if (
+            !e.target.hasAttribute('ez-drag-handle') || // must have drag-handle attribute
+            (typeof e.button !== 'undefined' && e.button !== 0) || // disable right click
+            interaction.interacting() // must not already be interacting
+          ) {
+            return;
           }
 
-          return action;
+          interaction.start({ name: 'drag' }, e.interactable, e.currentTarget);
+
         });
       },
-
 
       /**
        * Fires once when an item enters another
@@ -316,13 +323,6 @@ angular.module('ez.list', [])
       },
 
       start: function(e, scope) {
-        if (
-          !e.target.hasAttribute('ez-drag-handle') ||
-          (typeof e.button !== 'undefined' && e.button !== 0) // disable right click
-        ) {
-          return;
-        }
-
         e.preventDefault();
         e.stopPropagation();
 

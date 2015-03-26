@@ -191,16 +191,18 @@
           <hr>
           <div ng-if="showList1"><pre>{{ list | stringify }}</pre></div>
           <div ez-list="list" config="config1">
-            <a class="ez-toggle-btn" ng-click="item[options.collapsedField] = !item[options.collapsedField]"g>
-              <i class="ez-arrow-right glyphicon glyphicon-chevron-right"g></i>
-              <i class="ez-arrow-down glyphicon glyphicon-chevron-down"g></i>
-            </a>
+            <div ez-drag-handle>
+              <a class="ez-toggle-btn" ng-click="item[options.collapsedField] = !item[options.collapsedField]"g>
+                <i class="ez-arrow-right glyphicon glyphicon-chevron-right"g></i>
+                <i class="ez-arrow-down glyphicon glyphicon-chevron-down"g></i>
+              </a>
 
-            {{ item.text }} - (depth={{ depth }})
+              {{ item.text }} - <input type="text" ng-model="depth"/>
 
-            <a class="remove" ng-click="remove()"><i class="glyphicon glyphicon-trash"g></i></a>
+              <a class="remove" ng-click="remove()"><i class="glyphicon glyphicon-trash"g></i></a>
 
-            <a class="question" ng-click="hey(item)"><i class="glyphicon glyphicon-question-sign"></i></a>
+              <a class="question" ng-click="hey(item)"><i class="glyphicon glyphicon-question-sign"></i></a>
+            </div>
           </div>
         </div>
       </div>
