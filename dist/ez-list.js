@@ -8,7 +8,7 @@ angular.module('ez.list', [])
     idField: 'id',
     listChildrenField: 'items',
     childrenField: 'items',
-    collapsedField: 'collapsed',
+    collapsedField: '_collapsed',
     showPlaceholder: true, // show placeholder where item will drop
     collapsed: true, // initial item collapsed state
     allowDrag: true, // allow items to be draggable
@@ -31,6 +31,7 @@ angular.module('ez.list', [])
       scope: {
         item: '=?ezList',
         config: '=?',
+        api: '=?',
         selectedItems: '=?'
       },
       template: '<div class="ez-list" ng-class="{\'ez-list-draggable\': options.allowDrag, \'ez-list-dropable\': options.mode == \'drop\', \'ez-no-placeholder\': !options.showPlaceholder, \'ez-droponly\': options.dropOnly, \'ez-list-empty\': !hasItems}">' +
@@ -84,6 +85,35 @@ angular.module('ez.list', [])
               Draggable.setDropzone(element, scope.options);
             }
           });
+        }
+
+        var getChildren = function(item) {
+          var data = [];
+          var _child;
+
+          if (!!item[scope.options.childrenField]) {
+            item[scope.options.childrenField].forEach(function(child) {
+              _child = angular.copy(child);
+              delete _child._parentItem;
+              delete _child._selected;
+              delete _child._active;
+              delete _child[scope.options.collapsedField];
+
+              if (!!_child[scope.options.childrenField]) {
+                _child[scope.options.childrenField] = getChildren(_child);
+              }
+
+              data.push(_child);
+            });
+          }
+
+          return data;
+        };
+
+        if (!!scope.api) {
+          scope.api.getChildren = function() {
+            return getChildren(scope.item);
+          };
         }
 
       }
@@ -446,8 +476,12 @@ angular.module('ez.list', [])
           this.setDropItem(placeholderEl.parentNode);
 
           if (typeof dragItemListScope.options.api.onMove === 'function') {
-            listContainerScope.options.api.onMove(dragItem, dropItem).then(function() {
+            listContainerScope.options.api.onMove(dragItem, dropItem).then(function(cb) {
               self.moveItem();
+
+              if (typeof cb === 'function') {
+                cb();
+              }
             }, function() {
               self.returnItem();
             });
@@ -580,6 +614,8 @@ angular.module('ez.list', [])
 
         if (listContainerScope.options.openOnSlide && dropItem[listContainerScope.options.collapsedField] === true) {
           dropItem[listContainerScope.options.collapsedField] = false;
+
+          listContainerScope.$emit('ez_list.item_opened', dropItem);
 
           listContainerScope.$apply();
 

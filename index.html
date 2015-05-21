@@ -122,7 +122,6 @@
         mode: 'drop',
         allowDrag: false,
         collapsed: false,
-        template: 'config2-tpl',
         api: {
           onDrop: function(item, target) {
             var deferred = $q.defer();
@@ -193,8 +192,8 @@
           <div ez-list="list" config="config1">
             <div ez-drag-handle>
               <a class="ez-toggle-btn" ng-click="item[options.collapsedField] = !item[options.collapsedField]"g>
-                <i class="ez-arrow-right glyphicon glyphicon-chevron-right"g></i>
-                <i class="ez-arrow-down glyphicon glyphicon-chevron-down"g></i>
+                <i class="ez-arrow-right glyphicon glyphicon-chevron-right"></i>
+                <i class="ez-arrow-down glyphicon glyphicon-chevron-down"></i>
               </a>
 
               {{ item.text }} - <input type="text" ng-model="depth"/>

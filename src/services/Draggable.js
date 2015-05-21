@@ -283,8 +283,12 @@
           this.setDropItem(placeholderEl.parentNode);
 
           if (typeof dragItemListScope.options.api.onMove === 'function') {
-            listContainerScope.options.api.onMove(dragItem, dropItem).then(function() {
+            listContainerScope.options.api.onMove(dragItem, dropItem).then(function(cb) {
               self.moveItem();
+
+              if (typeof cb === 'function') {
+                cb();
+              }
             }, function() {
               self.returnItem();
             });
@@ -417,6 +421,8 @@
 
         if (listContainerScope.options.openOnSlide && dropItem[listContainerScope.options.collapsedField] === true) {
           dropItem[listContainerScope.options.collapsedField] = false;
+
+          listContainerScope.$emit('ez_list.item_opened', dropItem);
 
           listContainerScope.$apply();
 

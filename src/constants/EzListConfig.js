@@ -7,7 +7,7 @@
     idField: 'id',
     listChildrenField: 'items',
     childrenField: 'items',
-    collapsedField: 'collapsed',
+    collapsedField: '_collapsed',
     showPlaceholder: true, // show placeholder where item will drop
     collapsed: true, // initial item collapsed state
     allowDrag: true, // allow items to be draggable

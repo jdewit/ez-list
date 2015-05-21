@@ -9,6 +9,7 @@
       scope: {
         item: '=?ezList',
         config: '=?',
+        api: '=?',
         selectedItems: '=?'
       },
       template: '<div class="ez-list" ng-class="{\'ez-list-draggable\': options.allowDrag, \'ez-list-dropable\': options.mode == \'drop\', \'ez-no-placeholder\': !options.showPlaceholder, \'ez-droponly\': options.dropOnly, \'ez-list-empty\': !hasItems}">' +
@@ -62,6 +63,35 @@
               Draggable.setDropzone(element, scope.options);
             }
           });
+        }
+
+        var getChildren = function(item) {
+          var data = [];
+          var _child;
+
+          if (!!item[scope.options.childrenField]) {
+            item[scope.options.childrenField].forEach(function(child) {
+              _child = angular.copy(child);
+              delete _child._parentItem;
+              delete _child._selected;
+              delete _child._active;
+              delete _child[scope.options.collapsedField];
+
+              if (!!_child[scope.options.childrenField]) {
+                _child[scope.options.childrenField] = getChildren(_child);
+              }
+
+              data.push(_child);
+            });
+          }
+
+          return data;
+        };
+
+        if (!!scope.api) {
+          scope.api.getChildren = function() {
+            return getChildren(scope.item);
+          };
         }
 
       }
