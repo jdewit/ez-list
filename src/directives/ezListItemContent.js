@@ -1,11 +1,13 @@
 (function() {
   'use strict';
 
-  angular.module('ez.list').directive('ezListItemContent', ['Draggable', function(Draggable) {
+  angular.module('ez.list').directive('ezListItemContent', ['EzListDraggable', function(Draggable) {
     return {
       restrict: 'C',
       link: function (scope, $element) {
         var element = $element[0];
+
+        $element.parent().parent().data('scope', scope);
 
         if (scope.options.allowDrag === true || (typeof scope.options.allowDrag === 'function' && scope.options.allowDrag(scope.item))) {
           Draggable.initDragItem(element, scope);

@@ -158,6 +158,14 @@
       $scope.style = 'style1';
 
     }])
+    .config([
+      '$compileProvider',
+      function(
+        $compileProvider
+      ) {
+        $compileProvider.debugInfoEnabled(false);
+      }
+    ])
 ;
 
   </script>

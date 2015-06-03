@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('ez.list').directive('ezList', ['EzListConfig', 'Draggable', function(EzListConfig, Draggable) {
+  angular.module('ez.list').directive('ezList', ['EzListConfig', 'EzListDraggable', function(Config, Draggable) {
     return {
       restrict: 'A',
       replace: true,
@@ -18,7 +18,9 @@
         '</ul>' +
         '</div>',
       link: function(scope, $element, attrs, ctrl, transclude) {
-        scope.options = angular.extend({}, EzListConfig, scope.config);
+        scope.options = angular.extend({}, Config, scope.config);
+
+        $element.data('scope', scope);
 
         // give child items access to the transclude
         scope.options.transclude = transclude;

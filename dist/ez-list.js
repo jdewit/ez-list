@@ -23,7 +23,7 @@ angular.module('ez.list', [])
       onDrop: null // called when an item is dropped onto another
     },
     transcludeMethods: {} // allow for binding methods to the transcluded scope
-}).directive('ezList', ['EzListConfig', 'Draggable', function(EzListConfig, Draggable) {
+}).directive('ezList', ['EzListConfig', 'EzListDraggable', function(Config, Draggable) {
     return {
       restrict: 'A',
       replace: true,
@@ -40,7 +40,9 @@ angular.module('ez.list', [])
         '</ul>' +
         '</div>',
       link: function(scope, $element, attrs, ctrl, transclude) {
-        scope.options = angular.extend({}, EzListConfig, scope.config);
+        scope.options = angular.extend({}, Config, scope.config);
+
+        $element.data('scope', scope);
 
         // give child items access to the transclude
         scope.options.transclude = transclude;
@@ -119,11 +121,13 @@ angular.module('ez.list', [])
       }
     };
 }])
-.directive('ezListItemContent', ['Draggable', function(Draggable) {
+.directive('ezListItemContent', ['EzListDraggable', function(Draggable) {
     return {
       restrict: 'C',
       link: function (scope, $element) {
         var element = $element[0];
+
+        $element.parent().parent().data('scope', scope);
 
         if (scope.options.allowDrag === true || (typeof scope.options.allowDrag === 'function' && scope.options.allowDrag(scope.item))) {
           Draggable.initDragItem(element, scope);
@@ -194,7 +198,7 @@ angular.module('ez.list', [])
       }
     };
 }])
-.factory('Draggable', [function() {
+.factory('EzListDraggable', [function() {
     var dragItem,
         dragItemEl,
         $dragItemEl,
@@ -313,7 +317,7 @@ angular.module('ez.list', [])
 
           listContainerEl = _listContainerEl;
           $listContainerEl = angular.element(listContainerEl);
-          listContainerScope = $listContainerEl.isolateScope();
+          listContainerScope = $listContainerEl.data('scope');
 
           listContainerEl.classList.add('ez-list-target');
 
@@ -352,6 +356,16 @@ angular.module('ez.list', [])
         }
       },
 
+      getListRootScope: function(itemScope) {
+        if (!!itemScope.__listRoot) {
+          return itemScope;
+        }
+
+        if (!!itemScope.$parent) {
+          return this.getListRootScope(itemScope.$parent);
+        }
+      },
+
       start: function(e, scope) {
         e.preventDefault();
         e.stopPropagation();
@@ -361,7 +375,8 @@ angular.module('ez.list', [])
         dragItemListEl = $dragItemEl[0].parentNode;
         $listContainerEl = $(e.target).closest('.ez-list');
         listContainerEl = $listContainerEl[0];
-        listContainerScope = $listContainerEl.isolateScope();
+
+        listContainerScope = $listContainerEl.data('scope');
 
         this.setDropzones();
 
@@ -575,7 +590,22 @@ angular.module('ez.list', [])
       setDropItem: function(el) {
         dropItemEl = el;
         $dropItemEl = angular.element(el);
-        dropItem = $dropItemEl.scope().item;
+
+        var scope = $dropItemEl.data('scope');
+
+        if (!scope) {
+          scope = $dropItemEl.parent().data('scope');
+
+          if (!scope) {
+            scope = $dropItemEl.parent().parent().data('scope');
+
+            if (!scope) {
+              scope = $dropItemEl.parent().parent().parent().data('scope');
+            }
+          }
+        }
+
+        dropItem = scope.item;
       },
 
       /**

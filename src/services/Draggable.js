@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('ez.list').factory('Draggable', [function() {
+  angular.module('ez.list').factory('EzListDraggable', [function() {
     var dragItem,
         dragItemEl,
         $dragItemEl,
@@ -120,7 +120,7 @@
 
           listContainerEl = _listContainerEl;
           $listContainerEl = angular.element(listContainerEl);
-          listContainerScope = $listContainerEl.isolateScope();
+          listContainerScope = $listContainerEl.data('scope');
 
           listContainerEl.classList.add('ez-list-target');
 
@@ -159,6 +159,16 @@
         }
       },
 
+      getListRootScope: function(itemScope) {
+        if (!!itemScope.__listRoot) {
+          return itemScope;
+        }
+
+        if (!!itemScope.$parent) {
+          return this.getListRootScope(itemScope.$parent);
+        }
+      },
+
       start: function(e, scope) {
         e.preventDefault();
         e.stopPropagation();
@@ -168,7 +178,8 @@
         dragItemListEl = $dragItemEl[0].parentNode;
         $listContainerEl = $(e.target).closest('.ez-list');
         listContainerEl = $listContainerEl[0];
-        listContainerScope = $listContainerEl.isolateScope();
+
+        listContainerScope = $listContainerEl.data('scope');
 
         this.setDropzones();
 
@@ -382,7 +393,22 @@
       setDropItem: function(el) {
         dropItemEl = el;
         $dropItemEl = angular.element(el);
-        dropItem = $dropItemEl.scope().item;
+
+        var scope = $dropItemEl.data('scope');
+
+        if (!scope) {
+          scope = $dropItemEl.parent().data('scope');
+
+          if (!scope) {
+            scope = $dropItemEl.parent().parent().data('scope');
+
+            if (!scope) {
+              scope = $dropItemEl.parent().parent().parent().data('scope');
+            }
+          }
+        }
+
+        dropItem = scope.item;
       },
 
       /**
