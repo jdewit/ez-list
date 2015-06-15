@@ -60,7 +60,21 @@
 
         $dragItemEl.find('.ez-list-item-content').addClass('ez-dropzone');
       },
+      triggerDrag: function(e) {
+        var interaction = e.interaction;
 
+        if (
+          !e.target.hasAttribute('ez-drag-handle') || // must have drag-handle attribute
+          (typeof e.button !== 'undefined' && e.button !== 0) || // disable right click
+          interaction.interacting() // must not already be interacting
+        ) {
+          return;
+        }
+
+        interaction.start({
+          name: 'drag'
+        }, e.interactable, e.currentTarget);
+      },
       initDragItem: function(element, scope) {
         var self = this;
         interact(element).draggable({
@@ -75,18 +89,20 @@
             self.end(e);
           }
         })
-        .on('down', function (e) {
-          var interaction = e.interaction;
-          if (
-            !e.target.hasAttribute('ez-drag-handle') || // must have drag-handle attribute
-            (typeof e.button !== 'undefined' && e.button !== 0) || // disable right click
-            interaction.interacting() // must not already be interacting
-          ) {
+        .on('hold', function(e) {
+          // require tablets to use tab hold to begin interaction
+          if (!interact.supportsTouch()) {
             return;
           }
 
-          interaction.start({ name: 'drag' }, e.interactable, e.currentTarget);
+          self.triggerDrag(e);
+        })
+        .on('down', function (e) {
+          if (interact.supportsTouch()) {
+            return;
+          }
 
+          self.triggerDrag(e);
         });
       },
 
