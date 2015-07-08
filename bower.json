@@ -7,6 +7,6 @@
   "dependencies": {
     "jquery": "*",
     "angular": "1.3.*",
-    "interact": "git://github.com/taye/interact.js#master"
+    "interact": "1.2.*"
   }
 }
