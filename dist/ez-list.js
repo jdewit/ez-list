@@ -338,6 +338,14 @@ angular.module('ez.list', [])
           listContainerEl.classList.add('ez-list-target');
 
           _listContainerEl = null;
+
+          if (listContainerScope.options.mode !== 'drop') {
+            if (dragDirectionY === 'up') {
+              this.moveUp();
+            } else {
+              this.moveDown();
+            }
+          }
         }
       },
 
@@ -506,7 +514,7 @@ angular.module('ez.list', [])
 
           this.setDropItem(placeholderEl.parentNode);
 
-          if (typeof dragItemListScope.options.api.onMove === 'function') {
+          if (typeof listContainerScope.options.api.onMove === 'function') {
             listContainerScope.options.api.onMove(dragItem, dropItem).then(function(cb) {
               self.moveItem();
 
@@ -621,7 +629,9 @@ angular.module('ez.list', [])
           }
         }
 
-        dropItem = scope.item;
+        if (scope) {
+          dropItem = scope.item;
+        }
       },
 
       /**
@@ -675,21 +685,21 @@ angular.module('ez.list', [])
        * Move placeholder up
        */
       moveUp: function() {
-          dropItemEl.parentNode.insertBefore(placeholderEl, dropItemEl);
+        dropItemEl.parentNode.insertBefore(placeholderEl, dropItemEl);
       },
 
       /**
        * Move placeholder down
        */
       moveDown: function() {
-          var innerList = dropItemEl.children[0].children[1];
+        var innerList = dropItemEl.children[0].children[1];
 
-          if (innerList && innerList.children[0]) {
-            // move in if list is not collapsed
-            innerList.insertBefore(placeholderEl, innerList.children[0]);
-          } else {
-            dropItemEl.parentNode.insertBefore(placeholderEl, dropItemEl.nextElementSibling);
-          }
+        if (innerList && innerList.children[0]) {
+          // move in if list is not collapsed
+          innerList.insertBefore(placeholderEl, innerList.children[0]);
+        } else {
+          dropItemEl.parentNode.insertBefore(placeholderEl, dropItemEl.nextElementSibling);
+        }
       },
 
       /**
